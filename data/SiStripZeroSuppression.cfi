@@ -1,0 +1,18 @@
+module  theSiStripZeroSuppression =  SiStripZeroSuppression {
+	string RawDigiProducer = "RawToDigi"
+
+	string ZeroSuppressionMode  = "SiStripFedZeroSuppression"
+	uint32 FEDalgorithm  = 4
+	string CommonModeNoiseSubtractionMode = "Median"
+
+        bool UseCalibDataFromDB    = true
+	untracked string userEnv   = "me"
+	untracked string passwdEnv = "me"
+
+        double ElectronPerAdc      = 313.0 
+	double EquivalentNoiseCharge300um = 2160.
+	double BadStripProbability = 0.002
+	uint32  PedestalValue	   = 30
+	double  LowThValue         =  2
+	double  HighThValue        =  5
+}
