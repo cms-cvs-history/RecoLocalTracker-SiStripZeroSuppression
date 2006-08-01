@@ -2,7 +2,7 @@
 include "SimTracker/SiStripDigitizer/data/NoiseParameters.cfi"
 
 module  theSiStripZeroSuppression =  SiStripZeroSuppression {
-	string RawDigiProducer = "RawToDigi"
+	string RawDigiProducer = "siStripDigis"
 
 	string ZeroSuppressionMode  = "SiStripFedZeroSuppression"
 	uint32 FEDalgorithm  = 4
