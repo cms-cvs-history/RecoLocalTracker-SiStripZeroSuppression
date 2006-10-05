@@ -1,23 +1,31 @@
 #include noise parameters to be used in case UseCalibDataFromDB=false
 include "SimTracker/SiStripDigitizer/data/NoiseParameters.cfi"
 
-module  theSiStripZeroSuppression =  SiStripZeroSuppression {
-	string RawDigiProducer = "siStripDigis"
+module  siStripZeroSuppression =  SiStripZeroSuppression {
+	
+    VPSet RawDigiProducersList = {
+	{  string RawDigiProducer = "SiStripDigis" string RawDigiLabel = "VirginRaw"    }
+	,{ string RawDigiProducer = "SiStripDigis" string RawDigiLabel = "ProcessedRaw" }
+	,{ string RawDigiProducer = "SiStripDigis" string RawDigiLabel = "ScopeMode"   }
+    }	
+    
+    string ZeroSuppressionMode  = "SiStripFedZeroSuppression"
+    uint32 FEDalgorithm  = 4
+    string CommonModeNoiseSubtractionMode = "Median" #Supported modes: Median, TT6
+    
+    double CutToAvoidSignal = 3  ## Used only if  CommonModeNoiseSubtractionMode= "TT6"
 
-	string ZeroSuppressionMode  = "SiStripFedZeroSuppression"
-	uint32 FEDalgorithm  = 4
-	string CommonModeNoiseSubtractionMode = "Median"
+    ##
+    ##Parameters to configure SiStripNoiseService and SiStripPedestalService
+    ##
+    
+    bool UseCalibDataFromDB  = true
+    using NoiseParameters     
+    double BadStripProbability = 0.0
 
-##
-##Parameters to configure SiStripNoiseService and SiStripPedestalService
-##
-          bool UseCalibDataFromDB  = true
-         using NoiseParameters     
-	double BadStripProbability = 0.0
-
-	uint32  PedestalValue	   = 30
-	double  LowThValue         =  2
-	double  HighThValue        =  5
-
-##
+    uint32  PedestalValue      = 30
+    double  LowThValue         =  2
+    double  HighThValue        =  5
+    
+    ##
 }
