@@ -1,5 +1,5 @@
-#include noise parameters to be used in case UseCalibDataFromDB=false
-include "SimTracker/SiStripDigitizer/data/NoiseParameters.cfi"
+#include SiStripNoiseService parameters to be used in case UseCalibDataFromDB=false
+include "CommonTools/SiStripZeroSuppression/data/SiStripNoiseService.cfi"
 
 module  siStripZeroSuppression =  SiStripZeroSuppression {
 	
@@ -19,9 +19,7 @@ module  siStripZeroSuppression =  SiStripZeroSuppression {
     ##Parameters to configure SiStripNoiseService and SiStripPedestalService
     ##
     
-    bool UseCalibDataFromDB  = true
-    using NoiseParameters     
-    double BadStripProbability = 0.0
+    using SiStripNoiseServiceParameters
 
     uint32  PedestalValue      = 30
     double  LowThValue         =  2
@@ -29,3 +27,6 @@ module  siStripZeroSuppression =  SiStripZeroSuppression {
     
     ##
 }
+
+#NB: in case there is NOT DataBase access, please uncomment the following line
+#replace siStripZeroSuppression.UseCalibDataFromDB = false
