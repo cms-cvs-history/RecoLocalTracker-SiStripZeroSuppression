@@ -1,6 +1,3 @@
-#include SiStripNoiseService parameters to be used in case UseCalibDataFromDB=false
-include "CommonTools/SiStripZeroSuppression/data/SiStripNoiseService.cfi"
-
 module  siStripZeroSuppression =  SiStripZeroSuppression {
 	
     VPSet RawDigiProducersList = {
@@ -15,18 +12,5 @@ module  siStripZeroSuppression =  SiStripZeroSuppression {
     
     double CutToAvoidSignal = 3  ## Used only if  CommonModeNoiseSubtractionMode= "TT6"
 
-    ##
-    ##Parameters to configure SiStripNoiseService and SiStripPedestalService
-    ##
-    
-    using SiStripNoiseServiceParameters
-
-    uint32  PedestalValue      = 30
-    double  LowThValue         =  2
-    double  HighThValue        =  5
-    
-    ##
 }
 
-#NB: in case there is NOT DataBase access, please uncomment the following line
-#replace siStripZeroSuppression.UseCalibDataFromDB = false
