@@ -1,9 +1,9 @@
 module  siStripZeroSuppression =  SiStripZeroSuppression {
 	
     VPSet RawDigiProducersList = {
-	{  string RawDigiProducer = "SiStripDigis" string RawDigiLabel = "VirginRaw"    }
-	,{ string RawDigiProducer = "SiStripDigis" string RawDigiLabel = "ProcessedRaw" }
-	,{ string RawDigiProducer = "SiStripDigis" string RawDigiLabel = "ScopeMode"   }
+	{  string RawDigiProducer = "siStripDigis" string RawDigiLabel = "VirginRaw"    }
+	,{ string RawDigiProducer = "siStripDigis" string RawDigiLabel = "ProcessedRaw" }
+	,{ string RawDigiProducer = "siStripDigis" string RawDigiLabel = "ScopeMode"   }
     }	
     
     string ZeroSuppressionMode  = "SiStripFedZeroSuppression"
