@@ -9,6 +9,7 @@
 #include "DataFormats/SiStripDigi/interface/SiStripRawDigi.h"
 
 #include <memory>
+#include <vector>
 
 SiStripZeroSuppression::SiStripZeroSuppression(edm::ParameterSet const& conf)
   : inputTags(conf.getParameter<std::vector<edm::InputTag> >("RawDigiProducersList")),

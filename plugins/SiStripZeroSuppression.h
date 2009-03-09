@@ -3,7 +3,6 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripZeroSuppressionAlgorithm.h"
-class InputTag;
 
 class SiStripZeroSuppression : public edm::EDProducer
 {
