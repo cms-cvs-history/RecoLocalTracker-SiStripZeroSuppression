@@ -15,7 +15,6 @@
 <use name=CondCore/MetaDataService>
 <use name=Geometry/CommonDetUnit>
 <use name=Geometry/TrackerGeometryBuilder>	
-<use name=CommonTools/SiStripZeroSuppression>	
 
 <export>
 <lib name=RecoLocalTrackerSiStripZeroSuppression>
@@ -36,5 +35,4 @@
 <use name=CondCore/MetaDataService>
 <use name=Geometry/CommonDetUnit>
 <use name=Geometry/TrackerGeometryBuilder>	
-<use name=CommonTools/SiStripZeroSuppression>	
 </export>
