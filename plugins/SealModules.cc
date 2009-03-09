@@ -4,6 +4,5 @@
 
 #include "RecoLocalTracker/SiStripZeroSuppression/plugins/SiStripZeroSuppression.h"
 
-using cms::SiStripZeroSuppression;
 DEFINE_SEAL_MODULE();
 DEFINE_ANOTHER_FWK_MODULE(SiStripZeroSuppression);
