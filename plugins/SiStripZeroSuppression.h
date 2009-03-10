@@ -26,7 +26,10 @@ class SiStripZeroSuppression : public edm::EDProducer
   
  private:
 
+  void processRaw(const edm::InputTag&, const edm::DetSetVector<SiStripRawDigi>&, std::vector<edm::DetSet<SiStripDigi> >& );
   std::vector<edm::InputTag> inputTags;
+  typedef std::vector<edm::InputTag>::const_iterator tag_iterator_t;
+
   std::auto_ptr<SiStripFedZeroSuppression> suppressor;
   std::auto_ptr<SiStripCommonModeNoiseSubtractor> subtractorCMN;
   std::auto_ptr<SiStripPedestalsSubtractor> subtractorPed;
