@@ -20,6 +20,7 @@ class SiStripFedZeroSuppression {
   
  public:
   
+  SiStripFedZeroSuppression(uint16_t fedalgo):  theFEDalgorithm(fedalgo){};
   ~SiStripFedZeroSuppression(){};
   void init(const edm::EventSetup& es);
   void suppress(const std::vector<SiStripDigi>&,std::vector<SiStripDigi>&,const uint32_t&,
@@ -31,8 +32,6 @@ class SiStripFedZeroSuppression {
   bool IsAValidDigi();
   
  private:
-  
-  SiStripFedZeroSuppression(uint16_t fedalgo):  theFEDalgorithm(fedalgo){};
   
   inline uint16_t truncate(int16_t adc) const{
     if(adc>253) return ((adc>511) ? 255 : 254);
