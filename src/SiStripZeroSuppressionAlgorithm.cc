@@ -17,9 +17,10 @@
 
 SiStripZeroSuppressionAlgorithm::
 SiStripZeroSuppressionAlgorithm(const edm::ParameterSet& conf) 
-  : ZeroSuppressionMode_(conf.getParameter<std::string>("ZeroSuppressionMode")),
-    CMNSubtractionMode_(conf.getParameter<std::string>("CommonModeNoiseSubtractionMode"))
 {
+  std::string ZeroSuppressionMode_(conf.getParameter<std::string>("ZeroSuppressionMode"));
+  std::string CMNSubtractionMode_(conf.getParameter<std::string>("CommonModeNoiseSubtractionMode"));
+
   SiStripPedestalsSubtractor_ = new SiStripPedestalsSubtractor();
 
    //------------------------

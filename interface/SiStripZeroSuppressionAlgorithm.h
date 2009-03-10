@@ -18,17 +18,16 @@ class SiStripZeroSuppressionAlgorithm
   
   SiStripZeroSuppressionAlgorithm(const edm::ParameterSet& conf);
   ~SiStripZeroSuppressionAlgorithm();
-  void run(std::string RawDigiType, const edm::DetSetVector<SiStripRawDigi>& input,
-	   std::vector< edm::DetSet<SiStripDigi> >& output,const edm::EventSetup& es);
+  void run(std::string RawDigiType, 
+	   const edm::DetSetVector<SiStripRawDigi>& input,
+	   std::vector< edm::DetSet<SiStripDigi> >& output,
+	   const edm::EventSetup& es);
 
  private:
 
   SiStripFedZeroSuppression* SiStripZeroSuppressor_;
-  std::string ZeroSuppressionMode_;
-
   SiStripCommonModeNoiseSubtractor* SiStripCommonModeNoiseSubtractor_;
-  std::string CMNSubtractionMode_;
-
   SiStripPedestalsSubtractor* SiStripPedestalsSubtractor_;
+
 };
 #endif
