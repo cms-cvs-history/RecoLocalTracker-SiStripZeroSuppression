@@ -5,13 +5,18 @@
 
 
 class SiStripTT6CommonModeNoiseSubtraction : public SiStripCommonModeNoiseSubtractor {
-public:
   
-  SiStripTT6CommonModeNoiseSubtraction(double in):SiStripCommonModeNoiseSubtractor(in){};
+  friend class SiStripRawProcessingFactory;
+  
+ public:
+  
   ~SiStripTT6CommonModeNoiseSubtraction(){};
-  
   void init(const edm::EventSetup& es);
   void subtract(const uint32_t&,std::vector<int16_t>&);
-
+  
+ private:
+  
+  SiStripTT6CommonModeNoiseSubtraction(double in) : SiStripCommonModeNoiseSubtractor(in){};
+  
 };
 #endif

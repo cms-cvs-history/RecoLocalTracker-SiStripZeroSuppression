@@ -10,70 +10,66 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 
 #include <vector>
-
 class SiStripNoises;
 class SiStripThreshold;
 
-class SiStripFedZeroSuppression {
-public:
-  
-  SiStripFedZeroSuppression(uint16_t fedalgo):
-    theFEDalgorithm(fedalgo){};
-  ~SiStripFedZeroSuppression(){};
 
-  void init(const edm::EventSetup& es);
+class SiStripFedZeroSuppression {
   
+  friend class SiStripRawProcessingFactory;
+  
+ public:
+  
+  ~SiStripFedZeroSuppression(){};
+  void init(const edm::EventSetup& es);
   void suppress(const std::vector<SiStripDigi>&,std::vector<SiStripDigi>&,const uint32_t&,
 		edm::ESHandle<SiStripNoises> &,edm::ESHandle<SiStripThreshold> &);
-
   void suppress(const std::vector<SiStripDigi>&,std::vector<SiStripDigi>&,const uint32_t&);
-
   void suppress(const edm::DetSet<SiStripRawDigi>&,edm::DetSet<SiStripDigi>&);
-
   void suppress(const std::vector<int16_t>&,edm::DetSet<SiStripDigi>&);
-		
-
+  
   bool IsAValidDigi();
-
-private:
-
+  
+ private:
+  
+  SiStripFedZeroSuppression(uint16_t fedalgo):  theFEDalgorithm(fedalgo){};
+  
   inline uint16_t truncate(int16_t adc) const{
     if(adc>253) return ((adc>511) ? 255 : 254);
     return adc;
   };
-
-private:
+  
   edm::ESHandle<SiStripNoises> noiseHandle;
   edm::ESHandle<SiStripThreshold> thresholdHandle;
-
+  
   uint16_t theFEDalgorithm;
   int16_t  theFEDlowThresh;
   int16_t  theFEDhighThresh;
-
+  
   int16_t adc;
   int16_t adcPrev;
   int16_t adcNext;
   int16_t adcMaxNeigh;
   int16_t adcPrev2;
   int16_t adcNext2;
-
+  
   int16_t thePrevFEDlowThresh;
   int16_t thePrevFEDhighThresh;
   int16_t theNextFEDlowThresh;
   int16_t theNextFEDhighThresh;
-
+  
   int16_t theNeighFEDlowThresh;
   int16_t theNeighFEDhighThresh;
-
+  
   int16_t thePrev2FEDlowThresh;
   int16_t theNext2FEDlowThresh;
-
+  
   // working caches
   std::vector<int16_t>   highThr_,   lowThr_;   // thresholds in adc counts
   std::vector<float>     highThrSN_, lowThrSN_; // thresholds as S/N
   std::vector<float>     noises_;
-
+  
   void fillThresholds_(const uint32_t detID, size_t size) ;
-
+  
 };
 #endif

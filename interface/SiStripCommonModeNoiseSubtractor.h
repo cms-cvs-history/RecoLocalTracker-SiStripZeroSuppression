@@ -14,19 +14,19 @@
 
 #include <vector>
 
-
 class SiStripCommonModeNoiseSubtractor {
-public:
-    
-  SiStripCommonModeNoiseSubtractor(){};
-  SiStripCommonModeNoiseSubtractor(double in):cut_to_avoid_signal_(in){};
 
-  virtual ~SiStripCommonModeNoiseSubtractor(){};
+  friend class SiStripRawProcessingFactory;
+
+ public:
   
+  virtual ~SiStripCommonModeNoiseSubtractor(){};
   virtual void init(const edm::EventSetup& es)=0;
   virtual void subtract(const uint32_t&,std::vector<int16_t>&)=0;
-
-protected:
+  
+ protected:
+  SiStripCommonModeNoiseSubtractor(){};
+  SiStripCommonModeNoiseSubtractor(double in) : cut_to_avoid_signal_(in){};
   edm::ESHandle<SiStripNoises> noiseHandle;
   edm::ESHandle<SiStripQuality> qualityHandle;
   double cut_to_avoid_signal_;

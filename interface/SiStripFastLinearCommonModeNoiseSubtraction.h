@@ -3,15 +3,19 @@
 
 #include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripCommonModeNoiseSubtractor.h"
 
-
 class SiStripFastLinearCommonModeNoiseSubtraction : public SiStripCommonModeNoiseSubtractor {
-public:
   
-  SiStripFastLinearCommonModeNoiseSubtraction(){};
+  friend class SiStripRawProcessingFactory;
+  
+ public:
+  
   ~SiStripFastLinearCommonModeNoiseSubtraction(){};
-  
   void init(const edm::EventSetup& es){};
   void subtract(const uint32_t&,std::vector<int16_t>&);
+  
+ private:
+  
+  SiStripFastLinearCommonModeNoiseSubtraction(){};
   
 };
 #endif
