@@ -30,8 +30,7 @@ produce(edm::Event& e, const edm::EventSetup& es) {
 
   for(tag_iterator_t inputTag = inputTags.begin(); inputTag != inputTags.end(); ++inputTag ) {
 
-    std::vector< edm::DetSet<SiStripDigi> > output_base; 
-
+    std::vector<edm::DetSet<SiStripDigi> > output_base; 
     edm::Handle< edm::DetSetVector<SiStripRawDigi> > input;
     e.getByLabel(*inputTag,input);
 
