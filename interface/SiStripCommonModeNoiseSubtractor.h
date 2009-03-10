@@ -1,12 +1,7 @@
 #ifndef RECOLOCALTRACKER_SISTRIPZEROSUPPRESSION_SISTRIPCOMMONMODENOISESUBTRACTOR_H
 #define RECOLOCALTRACKER_SISTRIPZEROSUPPRESSION_SISTRIPCOMMONMODENOISESUBTRACTOR_H
 
-//#include "DataFormats/Common/interface/DetSetVector.h"
-//#include "DataFormats/SiStripDigi/interface/SiStripDigi.h"
-//#include "DataFormats/SiStripDigi/interface/SiStripRawDigi.h"
-//#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-
 #include <vector>
 
 class SiStripCommonModeNoiseSubtractor {

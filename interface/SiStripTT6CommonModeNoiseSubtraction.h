@@ -12,7 +12,6 @@ class SiStripTT6CommonModeNoiseSubtraction : public SiStripCommonModeNoiseSubtra
   
  public:
   
-  ~SiStripTT6CommonModeNoiseSubtraction(){};
   void init(const edm::EventSetup& es);
   void subtract(const uint32_t&,std::vector<int16_t>&);
   
