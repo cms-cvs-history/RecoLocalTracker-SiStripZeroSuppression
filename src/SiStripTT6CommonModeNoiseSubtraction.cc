@@ -36,7 +36,7 @@ subtract_(const uint32_t& detId,std::vector<T>& digis){
   for (uint16_t istrip=0;istrip<digis.size();++istrip){
     if ( !qualityHandle->IsStripBad(detQualityRange,istrip) ) {
       float stripNoise=noiseHandle->getNoise(istrip,detNoiseRange);
-      if( abs(digis[istrip]-FixedBias) < cut_to_avoid_signal_*stripNoise ) { 
+      if( fabs(digis[istrip]-FixedBias) < cut_to_avoid_signal_*stripNoise ) { 
 	double nWeight = 1/(stripNoise*stripNoise);
 	sumVal += (digis[istrip]-FixedBias)*nWeight;
 	sumWt += nWeight;
