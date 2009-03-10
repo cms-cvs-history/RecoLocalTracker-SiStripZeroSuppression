@@ -1,16 +1,16 @@
-#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripMedianCommonModeNoiseSubtraction.h"
+#include "RecoLocalTracker/SiStripZeroSuppression/interface/MedianCMNSubtractor.h"
 #include <sstream>
 
-void SiStripMedianCommonModeNoiseSubtraction::subtract(const uint32_t& detId,std::vector<int16_t>& digis) {subtract_(detId,digis);}
-void SiStripMedianCommonModeNoiseSubtraction::subtract(const uint32_t& detId,std::vector<float>& digis) {subtract_(detId,digis);}
+void MedianCMNSubtractor::subtract(const uint32_t& detId,std::vector<int16_t>& digis) {subtract_(detId,digis);}
+void MedianCMNSubtractor::subtract(const uint32_t& detId,std::vector<float>& digis) {subtract_(detId,digis);}
 
 template <typename T> 
 inline
-void SiStripMedianCommonModeNoiseSubtraction::
+void MedianCMNSubtractor::
 subtract_(const uint32_t& detId,std::vector<T>& digis){
   
 #ifdef DEBUG_SiStripZeroSuppression_
-  LogDebug("SiStripZeroSuppression") << "[SiStripMedianCommonModeNoiseSubtraction::subtract] digis.size()= " << digis.size();
+  LogDebug("SiStripZeroSuppression") << "[MedianCMNSubtractor::subtract] digis.size()= " << digis.size();
 #endif
   std::vector<T> APVdigis;
   typename std::vector<T>::iterator fs;
@@ -22,7 +22,7 @@ subtract_(const uint32_t& detId,std::vector<T>& digis){
   
 #ifdef DEBUG_SiStripZeroSuppression_
   if (edm::isDebugEnabled())
-    LogDebug("SiStripZeroSuppression") << "[SiStripMedianCommonModeNoiseSubtraction::subtract] DetId " << detId << " number of apvs: nAPV= " << nAPV;
+    LogDebug("SiStripZeroSuppression") << "[MedianCMNSubtractor::subtract] DetId " << detId << " number of apvs: nAPV= " << nAPV;
 #endif
   for (int iAPV=0; iAPV<nAPV; iAPV++){
     APVdigis.clear(); //added verify
@@ -43,14 +43,14 @@ subtract_(const uint32_t& detId,std::vector<T>& digis){
 #ifdef DEBUG_SiStripZeroSuppression_
     std::stringstream ss;
     if (edm::isDebugEnabled())
-      ss << "[SiStripMedianCommonModeNoiseSubtraction::subtract] DetId " << detId << " iApv= " <<iAPV << " CM= " << CM << std::endl;
+      ss << "[MedianCMNSubtractor::subtract] DetId " << detId << " iApv= " <<iAPV << " CM= " << CM << std::endl;
 #endif    
 
     while (fs < ls) {
       *fs = static_cast<T>(*fs-CM);
 #ifdef DEBUG_SiStripZeroSuppression_
       if (edm::isDebugEnabled())
-	ss << "[SiStripMedianCommonModeNoiseSubtraction::subtract] DetId " << detId << " strip " << fs-digis.begin() << " adc CM subtr " << *fs << std::endl;
+	ss << "[MedianCMNSubtractor::subtract] DetId " << detId << " strip " << fs-digis.begin() << " adc CM subtr " << *fs << std::endl;
 #endif
       fs++;
     }

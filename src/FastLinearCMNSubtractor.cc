@@ -1,19 +1,19 @@
-// File: SiStripFastLinearCommonModeNoiseSubtraction.cc
+// File: FastLinearCMNSubtractor.cc
 // Description:  A fast linear common mode subtraction algorithm by D. Abbaneo to be implemented on FED level
 // Author:  Alexander Dierlamm
 
-#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripFastLinearCommonModeNoiseSubtraction.h"
+#include "RecoLocalTracker/SiStripZeroSuppression/interface/FastLinearCMNSubtractor.h"
 #include <sstream>
 
-void SiStripFastLinearCommonModeNoiseSubtraction::subtract(const uint32_t& detId,std::vector<int16_t>& digis){ subtract_(detId,digis);}
-void SiStripFastLinearCommonModeNoiseSubtraction::subtract(const uint32_t& detId,std::vector<float>& digis){ subtract_(detId,digis);}
+void FastLinearCMNSubtractor::subtract(const uint32_t& detId,std::vector<int16_t>& digis){ subtract_(detId,digis);}
+void FastLinearCMNSubtractor::subtract(const uint32_t& detId,std::vector<float>& digis){ subtract_(detId,digis);}
 
 template<typename T>
 inline
-void SiStripFastLinearCommonModeNoiseSubtraction::
+void FastLinearCMNSubtractor::
 subtract_(const uint32_t& detId,std::vector<T>& digis){
 #ifdef DEBUG_SiStripZeroSuppression_
-  LogDebug("SiStripZeroSuppression") << "[SiStripFastLinearCommonModeNoiseSubtraction::subtract] digis.size()= " << digis.size();
+  LogDebug("SiStripZeroSuppression") << "[FastLinearCMNSubtractor::subtract] digis.size()= " << digis.size();
 #endif
 
   std::vector<T> APVdiff;
@@ -27,7 +27,7 @@ subtract_(const uint32_t& detId,std::vector<T>& digis){
   double offset;
 
 #ifdef DEBUG_SiStripZeroSuppression_
-  LogDebug("SiStripZeroSuppression") << "[SiStripFastLinearCommonModeNoiseSubtraction::subtract] number of apvs: nAPV= " << nAPV;
+  LogDebug("SiStripZeroSuppression") << "[FastLinearCMNSubtractor::subtract] number of apvs: nAPV= " << nAPV;
 #endif
 
   for (int iAPV=0; iAPV<nAPV; iAPV++){
@@ -49,14 +49,14 @@ subtract_(const uint32_t& detId,std::vector<T>& digis){
 #ifdef DEBUG_SiStripZeroSuppression_
     std::stringstream ss;
     if (edm::isDebugEnabled())
-      ss << "[SiStripFastLinearCommonModeNoiseSubtraction::subtract] iApv= " <<iAPV << " slope= " << slope << " offset= " << offset << std::endl;
+      ss << "[FastLinearCMNSubtractor::subtract] iApv= " <<iAPV << " slope= " << slope << " offset= " << offset << std::endl;
 #endif
 
     int strip=1;
     while (fs < ls) {
 #ifdef DEBUG_SiStripZeroSuppression_
       if (edm::isDebugEnabled())
-	ss << "[SiStripFastLinearCommonModeNoiseSubtraction::subtract] initial strip "<<strip<<": " << *fs << " - " << (offset+(strip-64)*slope);
+	ss << "[FastLinearCMNSubtractor::subtract] initial strip "<<strip<<": " << *fs << " - " << (offset+(strip-64)*slope);
 #endif
       *fs = static_cast<T>(*fs-(offset+(strip-64)*slope));
 #ifdef DEBUG_SiStripZeroSuppression_

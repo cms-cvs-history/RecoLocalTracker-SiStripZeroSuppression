@@ -1,4 +1,4 @@
-#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripTT6CommonModeNoiseSubtraction.h"
+#include "RecoLocalTracker/SiStripZeroSuppression/interface/TT6CMNSubtractor.h"
 
 #include "CondFormats/SiStripObjects/interface/SiStripNoises.h"
 #include "CalibFormats/SiStripObjects/interface/SiStripQuality.h"
@@ -6,17 +6,17 @@
 #include "CalibTracker/Records/interface/SiStripQualityRcd.h"
 #include <sstream>
 
-void SiStripTT6CommonModeNoiseSubtraction::init(const edm::EventSetup& es){
+void TT6CMNSubtractor::init(const edm::EventSetup& es){
   es.get<SiStripNoisesRcd>().get(noiseHandle);
   es.get<SiStripQualityRcd>().get(qualityHandle);
 }
 
-void SiStripTT6CommonModeNoiseSubtraction::subtract(const uint32_t& detId,std::vector<int16_t>& digis){ subtract_(detId,digis);}
-void SiStripTT6CommonModeNoiseSubtraction::subtract(const uint32_t& detId,std::vector<float>& digis){ subtract_(detId,digis);}
+void TT6CMNSubtractor::subtract(const uint32_t& detId,std::vector<int16_t>& digis){ subtract_(detId,digis);}
+void TT6CMNSubtractor::subtract(const uint32_t& detId,std::vector<float>& digis){ subtract_(detId,digis);}
 
 template<typename T>
 inline
-void SiStripTT6CommonModeNoiseSubtraction::
+void TT6CMNSubtractor::
 subtract_(const uint32_t& detId,std::vector<T>& digis){
 
   short FixedBias=128;
@@ -25,7 +25,7 @@ subtract_(const uint32_t& detId,std::vector<T>& digis){
 #ifdef DEBUG_SiStripZeroSuppression_
   std::stringstream ss;  
   if (edm::isDebugEnabled())
-    ss << "[SiStripTT6CommonModeNoiseSubtraction::subtract] digis.size()= " << digis.size() << std::endl;
+    ss << "[TT6CMNSubtractor::subtract] digis.size()= " << digis.size() << std::endl;
 #endif
 
   typename std::vector<T>::iterator fs;

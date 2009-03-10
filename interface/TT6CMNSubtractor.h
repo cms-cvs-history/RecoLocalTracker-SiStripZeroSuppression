@@ -6,7 +6,7 @@
 class SiStripNoises;
 class SiStripQuality;
 
-class SiStripTT6CommonModeNoiseSubtraction : public SiStripCommonModeNoiseSubtractor {
+class TT6CMNSubtractor : public SiStripCommonModeNoiseSubtractor {
   
   friend class SiStripRawProcessingFactory;
   
@@ -20,7 +20,7 @@ class SiStripTT6CommonModeNoiseSubtraction : public SiStripCommonModeNoiseSubtra
 
   template<typename T >void subtract_(const uint32_t&,std::vector<T>&);
 
-  SiStripTT6CommonModeNoiseSubtraction(double in) : cut_to_avoid_signal_(in) {};
+  TT6CMNSubtractor(double in) : cut_to_avoid_signal_(in) {};
   double cut_to_avoid_signal_;
   edm::ESHandle<SiStripNoises> noiseHandle;
   edm::ESHandle<SiStripQuality> qualityHandle;

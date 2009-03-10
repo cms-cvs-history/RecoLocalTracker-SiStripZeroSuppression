@@ -2,7 +2,7 @@
 #define RECOLOCALTRACKER_SISTRIPZEROSUPPRESSION_SISTRIPMEDIANCOMMONMODENOISESUBTRACTION_H
 #include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripCommonModeNoiseSubtractor.h"
 
-class SiStripMedianCommonModeNoiseSubtraction : public SiStripCommonModeNoiseSubtractor {
+class MedianCMNSubtractor : public SiStripCommonModeNoiseSubtractor {
   
   friend class SiStripRawProcessingFactory;
   
@@ -14,7 +14,7 @@ class SiStripMedianCommonModeNoiseSubtraction : public SiStripCommonModeNoiseSub
  private:
   
   template<typename T> void subtract_(const uint32_t&,std::vector<T>&);
-  SiStripMedianCommonModeNoiseSubtraction(){};
+  MedianCMNSubtractor(){};
   
 };
 #endif

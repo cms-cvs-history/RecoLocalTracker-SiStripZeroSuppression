@@ -3,9 +3,9 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripFedZeroSuppression.h"
 #include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripPedestalsSubtractor.h"
-#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripMedianCommonModeNoiseSubtraction.h"
-#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripFastLinearCommonModeNoiseSubtraction.h"
-#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripTT6CommonModeNoiseSubtraction.h"
+#include "RecoLocalTracker/SiStripZeroSuppression/interface/MedianCMNSubtractor.h"
+#include "RecoLocalTracker/SiStripZeroSuppression/interface/FastLinearCMNSubtractor.h"
+#include "RecoLocalTracker/SiStripZeroSuppression/interface/TT6CMNSubtractor.h"
 
 std::auto_ptr<SiStripPedestalsSubtractor> SiStripRawProcessingFactory::
 create_SubtractorPed(const edm::ParameterSet& conf) {
@@ -28,14 +28,14 @@ create_SubtractorCMN(const edm::ParameterSet& conf) {
   std::string mode = conf.getParameter<std::string>("CommonModeNoiseSubtractionMode");
 
   if ( mode == "Median")
-    return std::auto_ptr<SiStripCommonModeNoiseSubtractor>( new SiStripMedianCommonModeNoiseSubtraction() );
+    return std::auto_ptr<SiStripCommonModeNoiseSubtractor>( new MedianCMNSubtractor() );
 
   if ( mode == "FastLinear")
-    return std::auto_ptr<SiStripCommonModeNoiseSubtractor>( new SiStripFastLinearCommonModeNoiseSubtraction() );
+    return std::auto_ptr<SiStripCommonModeNoiseSubtractor>( new FastLinearCMNSubtractor() );
 
   if ( mode == "TT6") {
     double cutToAvoidSignal = conf.getParameter<double>("CutToAvoidSignal");
-    return std::auto_ptr<SiStripCommonModeNoiseSubtractor>( new SiStripTT6CommonModeNoiseSubtraction(cutToAvoidSignal) );
+    return std::auto_ptr<SiStripCommonModeNoiseSubtractor>( new TT6CMNSubtractor(cutToAvoidSignal) );
   }
   
   throw cms::Exception("Unregistered Algorithm") 
