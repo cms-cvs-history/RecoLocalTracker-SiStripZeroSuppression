@@ -12,7 +12,8 @@ class SiStripCommonModeNoiseSubtractor {
   
   virtual ~SiStripCommonModeNoiseSubtractor() {};
   virtual void init(const edm::EventSetup& es) {};
-  virtual void subtract(const uint32_t&,std::vector<int16_t>&)=0;
+  virtual void subtract(const uint32_t&, std::vector<int16_t>&) = 0;
+  virtual void subtract(const uint32_t&, std::vector<float>&) = 0;
   
  protected:
 

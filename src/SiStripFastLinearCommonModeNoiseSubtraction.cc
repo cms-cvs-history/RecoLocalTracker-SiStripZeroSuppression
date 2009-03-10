@@ -5,15 +5,21 @@
 #include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripFastLinearCommonModeNoiseSubtraction.h"
 #include <sstream>
 
-void SiStripFastLinearCommonModeNoiseSubtraction::subtract(const uint32_t& detId,std::vector<int16_t>& digis){
+void SiStripFastLinearCommonModeNoiseSubtraction::subtract(const uint32_t& detId,std::vector<int16_t>& digis){ subtract_(detId,digis);}
+void SiStripFastLinearCommonModeNoiseSubtraction::subtract(const uint32_t& detId,std::vector<float>& digis){ subtract_(detId,digis);}
+
+template<typename T>
+inline
+void SiStripFastLinearCommonModeNoiseSubtraction::
+subtract_(const uint32_t& detId,std::vector<T>& digis){
 #ifdef DEBUG_SiStripZeroSuppression_
   LogDebug("SiStripZeroSuppression") << "[SiStripFastLinearCommonModeNoiseSubtraction::subtract] digis.size()= " << digis.size();
 #endif
 
-  std::vector<int16_t> APVdiff;
-  std::vector<int16_t> APVdigis;
-  std::vector<int16_t>::iterator fs;
-  std::vector<int16_t>::iterator ls;
+  std::vector<T> APVdiff;
+  std::vector<T> APVdigis;
+  typename std::vector<T>::iterator fs;
+  typename std::vector<T>::iterator ls;
   APVdiff.reserve(64);
   APVdigis.reserve(128);
   int nAPV = digis.size()/128;
@@ -52,7 +58,7 @@ void SiStripFastLinearCommonModeNoiseSubtraction::subtract(const uint32_t& detId
       if (edm::isDebugEnabled())
 	ss << "[SiStripFastLinearCommonModeNoiseSubtraction::subtract] initial strip "<<strip<<": " << *fs << " - " << (offset+(strip-64)*slope);
 #endif
-      *fs = (int16_t) (*fs-(offset+(strip-64)*slope));
+      *fs = static_cast<T>(*fs-(offset+(strip-64)*slope));
 #ifdef DEBUG_SiStripZeroSuppression_
       ss << " ==>>   adc CM subtr " << *fs << std::endl;
 #endif

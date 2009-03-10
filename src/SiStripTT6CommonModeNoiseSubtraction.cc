@@ -11,7 +11,13 @@ void SiStripTT6CommonModeNoiseSubtraction::init(const edm::EventSetup& es){
   es.get<SiStripQualityRcd>().get(qualityHandle);
 }
 
-void SiStripTT6CommonModeNoiseSubtraction::subtract(const uint32_t& detId,std::vector<int16_t>& digis){
+void SiStripTT6CommonModeNoiseSubtraction::subtract(const uint32_t& detId,std::vector<int16_t>& digis){ subtract_(detId,digis);}
+void SiStripTT6CommonModeNoiseSubtraction::subtract(const uint32_t& detId,std::vector<float>& digis){ subtract_(detId,digis);}
+
+template<typename T>
+inline
+void SiStripTT6CommonModeNoiseSubtraction::
+subtract_(const uint32_t& detId,std::vector<T>& digis){
 
   short FixedBias=128;
   SiStripNoises::Range detNoiseRange = noiseHandle->getRange(detId);
@@ -22,8 +28,8 @@ void SiStripTT6CommonModeNoiseSubtraction::subtract(const uint32_t& detId,std::v
     ss << "[SiStripTT6CommonModeNoiseSubtraction::subtract] digis.size()= " << digis.size() << std::endl;
 #endif
 
-  std::vector<int16_t>::iterator fs;
-  std::vector<int16_t>::iterator ls;
+  typename std::vector<T>::iterator fs;
+  typename std::vector<T>::iterator ls;
   double sumVal = 0.0;
   double sumWt =  0.0;
   
@@ -48,7 +54,7 @@ void SiStripTT6CommonModeNoiseSubtraction::subtract(const uint32_t& detId,std::v
 	ss << " APV= " << (uint16_t) istrip/128 << " CM= " << CM << std::endl;
 #endif      
       while (fs < ls) {
-	*fs = (int16_t) (*fs-FixedBias-CM);
+	*fs = static_cast<T>(*fs-FixedBias-CM);
 #ifdef DEBUG_SiStripZeroSuppression_
 	if (edm::isDebugEnabled())
 	  ss << " adc CM subtr " << *fs << std::endl;
