@@ -4,6 +4,7 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "DataFormats/Common/interface/DetSet.h"
 #include "DataFormats/Common/interface/DetSetVector.h"
+#include <memory>
 
 class SiStripDigi;
 class SiStripRawDigi;
@@ -17,7 +18,7 @@ class SiStripZeroSuppressionAlgorithm
  public:
   
   SiStripZeroSuppressionAlgorithm(const edm::ParameterSet& conf);
-  ~SiStripZeroSuppressionAlgorithm();
+  ~SiStripZeroSuppressionAlgorithm() {}
   void run(std::string RawDigiType, 
 	   const edm::DetSetVector<SiStripRawDigi>& input,
 	   std::vector< edm::DetSet<SiStripDigi> >& output,
@@ -25,9 +26,9 @@ class SiStripZeroSuppressionAlgorithm
 
  private:
 
-  SiStripFedZeroSuppression* suppressor;
-  SiStripCommonModeNoiseSubtractor* subtractorCMN;
-  SiStripPedestalsSubtractor* subtractorPed;
+  std::auto_ptr<SiStripFedZeroSuppression> suppressor;
+  std::auto_ptr<SiStripCommonModeNoiseSubtractor> subtractorCMN;
+  std::auto_ptr<SiStripPedestalsSubtractor> subtractorPed;
 
 };
 #endif

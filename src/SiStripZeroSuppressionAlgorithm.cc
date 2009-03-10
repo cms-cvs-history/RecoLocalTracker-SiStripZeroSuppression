@@ -9,57 +9,17 @@
 #include "DataFormats/SiStripDigi/interface/SiStripDigi.h"
 #include "DataFormats/SiStripDigi/interface/SiStripRawDigi.h"
 
-#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripPedestalsSubtractor.h"
+#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripRawProcessingFactory.h"
 #include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripFedZeroSuppression.h"
-#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripMedianCommonModeNoiseSubtraction.h"
-#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripFastLinearCommonModeNoiseSubtraction.h"
-#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripTT6CommonModeNoiseSubtraction.h"
+#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripPedestalsSubtractor.h"
+#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripCommonModeNoiseSubtractor.h"
 
 SiStripZeroSuppressionAlgorithm::
 SiStripZeroSuppressionAlgorithm(const edm::ParameterSet& conf) 
-{
-  std::string ZeroSuppressionMode_(conf.getParameter<std::string>("ZeroSuppressionMode"));
-  std::string CMNSubtractionMode_(conf.getParameter<std::string>("CommonModeNoiseSubtractionMode"));
-
-  subtractorPed = new SiStripPedestalsSubtractor();
-
-   //------------------------
-  if ( ZeroSuppressionMode_ == "SiStripFedZeroSuppression" ) {
-    suppressor = new SiStripFedZeroSuppression(conf.getParameter<uint32_t>("FEDalgorithm")); 
-  } 
-  else {
-    edm::LogError("Unregistered Algorithm") << "No valid strip ZeroSuppressor selected, possible ZeroSuppressor: SiStripFedZeroSuppression" << std::endl;
-    throw cms::Exception("Wrong Parameter Configuraiton")
-      << "[SiStripZeroSuppressionAlgorithm::run] invalid ZeroSuppression algorithm " << ZeroSuppressionMode_ << "\n Please set in the SiStripZeroSuppression configuration file the string ZeroSuppressionMode = SiStripFedZeroSuppression";
-  }
-  
-   //------------------------
-  if ( CMNSubtractionMode_ == "Median") { 
-    subtractorCMN = new SiStripMedianCommonModeNoiseSubtraction();
-  }
-  else if ( CMNSubtractionMode_ == "TT6") { 
-    subtractorCMN = new SiStripTT6CommonModeNoiseSubtraction(conf.getParameter<double>("CutToAvoidSignal"));
-  }
-  else if ( CMNSubtractionMode_ == "FastLinear") { 
-    subtractorCMN = new SiStripFastLinearCommonModeNoiseSubtraction();
-  }
-  else {
-    edm::LogError("Unregistered Algorithm") << "Possible CommonModeNoiseSubtraction modes: (Median, FastLinear, TT6)" << std::endl;
-    throw cms::Exception("Wrong Parameter Configuraiton")
-      << "Invalid CMNSubtraction algorithm " << CMNSubtractionMode_ 
-      << "\n Please set in the SiStripZeroSuppression configuration file the string CommonModeNoiseSubtractionMode to a supported mode: Median, TT6, FastLinearone";
-  }
-}
-
-SiStripZeroSuppressionAlgorithm::
-~SiStripZeroSuppressionAlgorithm() {
-  if ( suppressor != 0 ) 
-    delete suppressor;
-  if ( subtractorCMN != 0 ) 
-    delete subtractorCMN;
-  if ( subtractorPed != 0 ) 
-    delete subtractorPed;
-}
+  : suppressor(SiStripRawProcessingFactory::create_Suppressor(conf)),
+    subtractorCMN(SiStripRawProcessingFactory::create_SubtractorCMN(conf)),
+    subtractorPed(SiStripRawProcessingFactory::create_SubtractorPed(conf))
+{}
 
 void SiStripZeroSuppressionAlgorithm::
 run(std::string RawDigiType, 
