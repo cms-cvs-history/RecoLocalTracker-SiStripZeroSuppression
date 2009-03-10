@@ -21,7 +21,6 @@ class SiStripZeroSuppression : public edm::EDProducer
  public:
   
   explicit SiStripZeroSuppression(const edm::ParameterSet&);  
-  virtual ~SiStripZeroSuppression() {}
   virtual void produce(edm::Event& , const edm::EventSetup& );
   
  private:
