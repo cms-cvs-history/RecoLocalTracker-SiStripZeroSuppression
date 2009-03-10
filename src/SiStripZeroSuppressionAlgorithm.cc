@@ -21,11 +21,11 @@ SiStripZeroSuppressionAlgorithm(const edm::ParameterSet& conf)
   std::string ZeroSuppressionMode_(conf.getParameter<std::string>("ZeroSuppressionMode"));
   std::string CMNSubtractionMode_(conf.getParameter<std::string>("CommonModeNoiseSubtractionMode"));
 
-  SiStripPedestalsSubtractor_ = new SiStripPedestalsSubtractor();
+  subtractorPed = new SiStripPedestalsSubtractor();
 
    //------------------------
   if ( ZeroSuppressionMode_ == "SiStripFedZeroSuppression" ) {
-    SiStripZeroSuppressor_ = new SiStripFedZeroSuppression(conf.getParameter<uint32_t>("FEDalgorithm")); 
+    suppressor = new SiStripFedZeroSuppression(conf.getParameter<uint32_t>("FEDalgorithm")); 
   } 
   else {
     edm::LogError("Unregistered Algorithm") << "No valid strip ZeroSuppressor selected, possible ZeroSuppressor: SiStripFedZeroSuppression" << std::endl;
@@ -35,13 +35,13 @@ SiStripZeroSuppressionAlgorithm(const edm::ParameterSet& conf)
   
    //------------------------
   if ( CMNSubtractionMode_ == "Median") { 
-    SiStripCommonModeNoiseSubtractor_ = new SiStripMedianCommonModeNoiseSubtraction();
+    subtractorCMN = new SiStripMedianCommonModeNoiseSubtraction();
   }
   else if ( CMNSubtractionMode_ == "TT6") { 
-    SiStripCommonModeNoiseSubtractor_ = new SiStripTT6CommonModeNoiseSubtraction(conf.getParameter<double>("CutToAvoidSignal"));
+    subtractorCMN = new SiStripTT6CommonModeNoiseSubtraction(conf.getParameter<double>("CutToAvoidSignal"));
   }
   else if ( CMNSubtractionMode_ == "FastLinear") { 
-    SiStripCommonModeNoiseSubtractor_ = new SiStripFastLinearCommonModeNoiseSubtraction();
+    subtractorCMN = new SiStripFastLinearCommonModeNoiseSubtraction();
   }
   else {
     edm::LogError("Unregistered Algorithm") << "Possible CommonModeNoiseSubtraction modes: (Median, FastLinear, TT6)" << std::endl;
@@ -53,12 +53,12 @@ SiStripZeroSuppressionAlgorithm(const edm::ParameterSet& conf)
 
 SiStripZeroSuppressionAlgorithm::
 ~SiStripZeroSuppressionAlgorithm() {
-  if ( SiStripZeroSuppressor_ != 0 ) 
-    delete SiStripZeroSuppressor_;
-  if ( SiStripCommonModeNoiseSubtractor_ != 0 ) 
-    delete SiStripCommonModeNoiseSubtractor_;
-  if ( SiStripPedestalsSubtractor_ != 0 ) 
-    delete SiStripPedestalsSubtractor_;
+  if ( suppressor != 0 ) 
+    delete suppressor;
+  if ( subtractorCMN != 0 ) 
+    delete subtractorCMN;
+  if ( subtractorPed != 0 ) 
+    delete subtractorPed;
 }
 
 void SiStripZeroSuppressionAlgorithm::
@@ -67,9 +67,9 @@ run(std::string RawDigiType,
     std::vector< edm::DetSet<SiStripDigi> >& output,
     const edm::EventSetup& es)
 {
-  SiStripPedestalsSubtractor_->init(es);
-  SiStripCommonModeNoiseSubtractor_->init(es);
-  SiStripZeroSuppressor_->init(es);
+  subtractorPed->init(es);
+  subtractorCMN->init(es);
+  suppressor->init(es);
   
   for ( edm::DetSetVector<SiStripRawDigi>::const_iterator 
 	  DSViter = input.begin(); DSViter != input.end(); DSViter++) {
@@ -78,12 +78,12 @@ run(std::string RawDigiType,
     
     if ( RawDigiType == "VirginRaw" ) {
       std::vector<int16_t> vssRd(DSViter->data.size());
-      SiStripPedestalsSubtractor_->subtract(*DSViter,vssRd);
-      SiStripCommonModeNoiseSubtractor_->subtract(DSViter->id,vssRd);
-      SiStripZeroSuppressor_->suppress(vssRd,ssd);
+      subtractorPed->subtract(*DSViter,vssRd);
+      subtractorCMN->subtract(DSViter->id,vssRd);
+      suppressor->suppress(vssRd,ssd);
     } 
     else if ( RawDigiType == "ProcessedRaw" ){
-      SiStripZeroSuppressor_->suppress((*DSViter),ssd);	
+      suppressor->suppress((*DSViter),ssd);	
     }
     else throw cms::Exception("Unknown RawDigitype") << "SiStripZeroZuppression can only process types \"VirginRaw\" and \"ProcessedRaw\"";
     

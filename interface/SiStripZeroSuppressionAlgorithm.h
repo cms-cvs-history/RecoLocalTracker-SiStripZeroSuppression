@@ -25,9 +25,9 @@ class SiStripZeroSuppressionAlgorithm
 
  private:
 
-  SiStripFedZeroSuppression* SiStripZeroSuppressor_;
-  SiStripCommonModeNoiseSubtractor* SiStripCommonModeNoiseSubtractor_;
-  SiStripPedestalsSubtractor* SiStripPedestalsSubtractor_;
+  SiStripFedZeroSuppression* suppressor;
+  SiStripCommonModeNoiseSubtractor* subtractorCMN;
+  SiStripPedestalsSubtractor* subtractorPed;
 
 };
 #endif
