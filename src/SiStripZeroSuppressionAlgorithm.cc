@@ -10,9 +10,6 @@
 #include "DataFormats/SiStripDigi/interface/SiStripRawDigi.h"
 
 #include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripRawProcessingFactory.h"
-#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripFedZeroSuppression.h"
-#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripPedestalsSubtractor.h"
-#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripCommonModeNoiseSubtractor.h"
 
 SiStripZeroSuppressionAlgorithm::
 SiStripZeroSuppressionAlgorithm(const edm::ParameterSet& conf) 

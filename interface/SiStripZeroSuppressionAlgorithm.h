@@ -4,14 +4,13 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "DataFormats/Common/interface/DetSet.h"
 #include "DataFormats/Common/interface/DetSetVector.h"
+#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripFedZeroSuppression.h"
+#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripPedestalsSubtractor.h"
+#include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripCommonModeNoiseSubtractor.h"
 #include <memory>
 
 class SiStripDigi;
 class SiStripRawDigi;
-class SiStripPedestalsSubtractor;
-class SiStripFedZeroSuppression;
-class SiStripCommonModeNoiseSubtractor;
-
 
 class SiStripZeroSuppressionAlgorithm 
 {
