@@ -9,7 +9,7 @@ void MedianCMNSubtractor::
 subtract_(const uint32_t& detId,std::vector<T>& digis){
   
   std::vector<T> tmp;  tmp.reserve(128);
-  typename std::vector<T>::iterator strip(digis.begin()), endAPV, high, low;
+  typename std::vector<T>::iterator strip(digis.begin()), endAPV;
   
   for (unsigned iAPV=0; iAPV<digis.size()/128; iAPV++){
 
