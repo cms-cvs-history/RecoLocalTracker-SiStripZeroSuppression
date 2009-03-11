@@ -12,40 +12,38 @@ void SiStripPedestalsSubtractor::init(const edm::EventSetup& es){
 }
 
 
-void SiStripPedestalsSubtractor::subtract(const edm::DetSet<SiStripRawDigi>& input,std::vector<int16_t>& ssrd){
+void SiStripPedestalsSubtractor::subtract(const edm::DetSet<SiStripRawDigi>& input, std::vector<int16_t>& output){
+  try {
 
-  edm::DetSet<SiStripRawDigi>::const_iterator iter=input.begin();
-  std::vector<int16_t>::iterator              iout=ssrd.begin();
-  SiStripPedestals::Range detPedRange = pedestalsHandle->getRange(input.id);
-  
-  peds_.resize(input.size());
-  try{
-      pedestalsHandle->allPeds(peds_, detPedRange);
+    pedestals.resize(input.size());
+    SiStripPedestals::Range pedestalsRange = pedestalsHandle->getRange(input.id);
+    pedestalsHandle->allPeds(pedestals, pedestalsRange);
+
+    edm::DetSet<SiStripRawDigi>::const_iterator 
+      inDigi = input.begin();
+
+    std::vector<int>::const_iterator              
+      ped = pedestals.begin();  
+
+    std::vector<int16_t>::iterator            
+      outDigi = output.begin();
+
+    while( inDigi != input.end() ) {
+
+      *outDigi = ( *ped > 895 ) 
+	? inDigi->adc() - *ped + 1024
+	: inDigi->adc() - *ped;
+
+      ++inDigi; 
+      ++ped; 
+      ++outDigi;
+    }
+
+
   } catch(cms::Exception& e){
-    //throw cms::Exception("CorruptedData")
     edm::LogError("SiStripPedestalsSubtractor")  
       << "[SiStripPedestalsSubtractor::subtract] DetId " << input.id << " propagating error from SiStripPedestal" << e.what();
-    ssrd.clear();
+    output.clear();
   }
 
-  std::vector<int>::const_iterator it_ped = peds_.begin();  
-  for (;iter!=input.end(); ++iter, ++iout, ++it_ped) {
-
-    int ped = *it_ped;
-    //  uncomment to check bulk pedestal decoding
-    //assert( ped == static_cast<int>(pedestalsHandle->getPed(it_ped - peds_.begin(), detPedRange)) );
-    
-    if(ped>895) ped -= 1024;
-    *iout = iter->adc() - ped;
-
-#ifdef DEBUG_SiStripZeroSuppression_
-    if (edm::isDebugEnabled())
-      LogDebug("SiStripPedestalsSubtractor") 
-	<<"[SiStripPedestalsSubtractor::subtract]: DetID " << input.id << " strip " << (it_ped - peds.begin()) << " adc before sub= " 
-	<< iter->adc() 
-	<< "\t pedval= " << pedestalsHandle->getPed(it_ped - peds.begin(),detPedRange)
-	<< "\t adc pedsub = " << ssrd[it_ped - peds.begin()]
-	<< std::endl;
-#endif
-  }
 }
