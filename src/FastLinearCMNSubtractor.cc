@@ -9,20 +9,23 @@ void FastLinearCMNSubtractor::
 subtract_(const uint32_t& detId,std::vector<T>& digis){
 
   std::vector<T> tmp;  tmp.reserve(128);
-  typename std::vector<T>::iterator strip(digis.begin()), endAPV, high, low;
+  typename std::vector<T>::iterator 
+    strip( digis.begin() ), 
+    end(   digis.end()   ),
+    endAPV, high, low;
 
-  for (unsigned iAPV=0; iAPV<digis.size()/128; iAPV++){
-
-    endAPV = strip+128;   tmp.clear(); 
-    tmp.insert(tmp.end(), strip, endAPV );
-    const float offset = median(tmp);
+  while( strip < end ) {
+    endAPV = strip+128;
+    const float offset = median(std::vector<int>(strip,endAPV));
     
     low = strip;   high = strip+64;   tmp.clear(); 
     while( high < endAPV) tmp.push_back( *high++ - *low++ );
     const float slope = median(tmp)/64.;
 
-    while (strip < endAPV)
-      *strip++ = static_cast<T>( *strip - (offset + ((endAPV-strip)-128-64)*slope) );
+    while (strip < endAPV) {
+      *strip = static_cast<T>( *strip - (offset + ((endAPV-strip)-128-64)*slope) );
+      strip++;
+    }
 
   }
 }
