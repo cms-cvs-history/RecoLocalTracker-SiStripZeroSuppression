@@ -20,7 +20,10 @@ class TT6CMNSubtractor : public SiStripCommonModeNoiseSubtractor {
 
   template<typename T >void subtract_(const uint32_t&,std::vector<T>&);
 
-  TT6CMNSubtractor(double in) : cut_to_avoid_signal_(in) {};
+  TT6CMNSubtractor(double in) : 
+    cut_to_avoid_signal_(in),
+    noise_cache_id(0),
+    quality_cache_id(0) {};
   double cut_to_avoid_signal_;
   edm::ESHandle<SiStripNoises> noiseHandle;
   edm::ESHandle<SiStripQuality> qualityHandle;
