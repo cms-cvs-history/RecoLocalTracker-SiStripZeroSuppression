@@ -8,15 +8,16 @@ inline
 void MedianCMNSubtractor::
 subtract_(const uint32_t& detId,std::vector<T>& digis){
   
-  std::vector<T> tmp;  tmp.reserve(128);
+  std::vector<T> tmp;  tmp.reserve(128);  
   typename std::vector<T>::iterator  
     strip( digis.begin() ), 
     end(   digis.end()   ),
     endAPV;
   
   while( strip < end ) {
-    endAPV = strip+128;
-    const float offset = median(std::vector<int>(strip,endAPV));
+    endAPV = strip+128; tmp.clear();
+    tmp.insert(tmp.end(),strip,endAPV);
+    const float offset = median(tmp);
 
     while (strip < endAPV) {
       *strip = static_cast<T>(*strip-offset);

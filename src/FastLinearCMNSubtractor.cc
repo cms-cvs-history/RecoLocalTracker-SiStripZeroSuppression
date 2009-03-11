@@ -15,8 +15,9 @@ subtract_(const uint32_t& detId,std::vector<T>& digis){
     endAPV, high, low;
 
   while( strip < end ) {
-    endAPV = strip+128;
-    const float offset = median(std::vector<int>(strip,endAPV));
+    endAPV = strip+128; tmp.clear();
+    tmp.insert(tmp.end(),strip,endAPV);
+    const float offset = median(tmp);
     
     low = strip;   high = strip+64;   tmp.clear(); 
     while( high < endAPV) tmp.push_back( *high++ - *low++ );
