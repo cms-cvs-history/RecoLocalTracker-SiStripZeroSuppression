@@ -5,8 +5,7 @@ siStripZeroSuppression = cms.EDFilter("SiStripZeroSuppression",
     cms.InputTag('siStripDigis','VirginRaw'), 
     cms.InputTag('siStripDigis','ProcessedRaw'),
     cms.InputTag('siStripDigis','ScopeMode')),
-                                      FEDalgorithm = cms.uint32(4),
-                                      ZeroSuppressionMode = cms.string('SiStripFedZeroSuppression'),
-                                      CutToAvoidSignal = cms.double(3.0), ##
+                                      SiStripFedZeroSuppressionMode = cms.uint32(4),
                                       CommonModeNoiseSubtractionMode = cms.string('Median') ##Supported modes: Median, TT6, FastLinear
+                                      #CutToAvoidSignal = cms.double(3.0), ##
 )
