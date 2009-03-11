@@ -20,7 +20,10 @@ class SiStripFedZeroSuppression {
   
  public:
   
-  SiStripFedZeroSuppression(uint16_t fedalgo):  theFEDalgorithm(fedalgo){};
+  SiStripFedZeroSuppression(uint16_t fedalgo):  
+    theFEDalgorithm(fedalgo), 
+    noise_cache_id(0), 
+    threshold_cache_id(0) {};
   ~SiStripFedZeroSuppression(){};
   void init(const edm::EventSetup& es);
   void suppress(const std::vector<SiStripDigi>&,std::vector<SiStripDigi>&,const uint32_t&,
