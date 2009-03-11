@@ -6,8 +6,17 @@
 #include "CalibTracker/Records/interface/SiStripQualityRcd.h"
 
 void TT6CMNSubtractor::init(const edm::EventSetup& es){
-  es.get<SiStripNoisesRcd>().get(noiseHandle);
-  es.get<SiStripQualityRcd>().get(qualityHandle);
+  uint32_t n_cache_id = es.get<SiStripNoisesRcd>().cacheIdentifier();
+  uint32_t q_cache_id = es.get<SiStripQualityRcd>().cacheIdentifier();
+
+  if(n_cache_id != noise_cache_id) {
+    es.get<SiStripNoisesRcd>().get( noiseHandle );
+    noise_cache_id = n_cache_id;
+  }
+  if(q_cache_id != quality_cache_id) {
+    es.get<SiStripQualityRcd>().get( qualityHandle );
+    quality_cache_id = q_cache_id;
+  }
 }
 
 void TT6CMNSubtractor::subtract(const uint32_t& detId,std::vector<int16_t>& digis){ subtract_(detId,digis);}

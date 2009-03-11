@@ -24,6 +24,7 @@ class SiStripPedestalsSubtractor {
   SiStripPedestalsSubtractor(){};
   edm::ESHandle<SiStripPedestals> pedestalsHandle;
   std::vector<int> peds_;
+  uint32_t peds_cache_id;
   
 };
 #endif

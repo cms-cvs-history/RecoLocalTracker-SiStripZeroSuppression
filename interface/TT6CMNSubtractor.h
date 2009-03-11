@@ -24,6 +24,7 @@ class TT6CMNSubtractor : public SiStripCommonModeNoiseSubtractor {
   double cut_to_avoid_signal_;
   edm::ESHandle<SiStripNoises> noiseHandle;
   edm::ESHandle<SiStripQuality> qualityHandle;
+  uint32_t noise_cache_id, quality_cache_id;
   
 };
 #endif

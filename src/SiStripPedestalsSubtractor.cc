@@ -4,7 +4,11 @@
 #include "FWCore/Utilities/interface/Exception.h"
 
 void SiStripPedestalsSubtractor::init(const edm::EventSetup& es){
-  es.get<SiStripPedestalsRcd>().get(pedestalsHandle);
+  uint32_t p_cache_id = es.get<SiStripPedestalsRcd>().cacheIdentifier();
+  if(p_cache_id != peds_cache_id) {
+    es.get<SiStripPedestalsRcd>().get(pedestalsHandle);
+    peds_cache_id = p_cache_id;
+  }
 }
 
 

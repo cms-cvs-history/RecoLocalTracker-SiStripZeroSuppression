@@ -10,9 +10,17 @@
 using namespace std;
 
 void SiStripFedZeroSuppression::init(const edm::EventSetup& es){
-  // Get ESObject 
-  es.get<SiStripNoisesRcd>().get(noiseHandle);
-  es.get<SiStripThresholdRcd>().get(thresholdHandle);
+  uint32_t n_cache_id = es.get<SiStripNoisesRcd>().cacheIdentifier();
+  uint32_t t_cache_id = es.get<SiStripThresholdRcd>().cacheIdentifier();
+
+  if(n_cache_id != noise_cache_id) {
+    es.get<SiStripNoisesRcd>().get( noiseHandle );
+    noise_cache_id = n_cache_id;
+  }
+  if(t_cache_id != threshold_cache_id) {
+    es.get<SiStripThresholdRcd>().get( thresholdHandle );
+    threshold_cache_id = t_cache_id;
+  }
 }
 
 void SiStripFedZeroSuppression::suppress(const std::vector<SiStripDigi>& in, std::vector<SiStripDigi>& selectedSignal,const uint32_t& detID){

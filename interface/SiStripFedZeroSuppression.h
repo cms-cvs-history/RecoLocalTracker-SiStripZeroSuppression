@@ -40,6 +40,7 @@ class SiStripFedZeroSuppression {
   
   edm::ESHandle<SiStripNoises> noiseHandle;
   edm::ESHandle<SiStripThreshold> thresholdHandle;
+  uint32_t noise_cache_id, threshold_cache_id;
   
   uint16_t theFEDalgorithm;
   int16_t  theFEDlowThresh;
