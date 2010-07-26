@@ -8,6 +8,7 @@
 #include "DataFormats/Common/interface/DetSet.h"
 #include "DataFormats/Common/interface/DetSetVector.h"
 #include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripRawProcessingAlgorithms.h"
+#include "DataFormats/SiStripDigi/interface/SiStripProcessedRawDigi.h"
 
 class SiStripDigi;
 class SiStripRawDigi;
@@ -27,7 +28,7 @@ class SiStripZeroSuppression : public edm::EDProducer
   typedef std::vector<edm::InputTag>::const_iterator tag_iterator_t;
   bool storeCM;
   
-  std::vector< edm::DetSet<SiStripDigi> > output_apvcm; 
+  std::vector< edm::DetSet<SiStripProcessedRawDigi> > output_apvcm; 
 
   std::auto_ptr<SiStripRawProcessingAlgorithms> algorithms;
 

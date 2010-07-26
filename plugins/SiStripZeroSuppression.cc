@@ -20,7 +20,7 @@ SiStripZeroSuppression(edm::ParameterSet const& conf)
     produces< edm::DetSetVector<SiStripDigi> > (inputTag->instance());
 
   if(storeCM)
-    produces< edm::DetSetVector<SiStripDigi> > ("APVCM");
+    produces< edm::DetSetVector<SiStripProcessedRawDigi> > ("APVCM");
 }
 
 void SiStripZeroSuppression::
@@ -42,7 +42,7 @@ produce(edm::Event& e, const edm::EventSetup& es) {
   }
 
   if(storeCM){
-    std::auto_ptr< edm::DetSetVector<SiStripDigi> > outputAPVCM(new edm::DetSetVector<SiStripDigi>(output_apvcm) );
+    std::auto_ptr< edm::DetSetVector<SiStripProcessedRawDigi> > outputAPVCM(new edm::DetSetVector<SiStripProcessedRawDigi>(output_apvcm) );
     e.put( outputAPVCM,"APVCM");
   }
   
@@ -79,22 +79,31 @@ processRaw(const edm::InputTag& inputTag, const edm::DetSetVector<SiStripRawDigi
 
       if(storeCM){
 	const std::vector< std::pair<short,float> >& vmedians = algorithms->subtractorCMN->getAPVsCM();
-	edm::DetSet<SiStripDigi> apvDetSet(rawDigis->id);
+	edm::DetSet<SiStripProcessedRawDigi> apvDetSet(rawDigis->id);
+	short apvNb=0;
 	for(size_t i=0;i<vmedians.size();++i){
-	  apvDetSet.push_back(SiStripDigi(vmedians[i].first,(vmedians[i].second+512)*10));
-	  // std::cout << "CM patch in VR " << rawDigis->id << " " << vmedians[i].first << " " << vmedians[i].second << std::endl;
+	  if(vmedians[i].first>apvNb){
+	    for(int i=0;i<vmedians[i].first-apvNb;++i){
+	      apvDetSet.push_back(SiStripProcessedRawDigi(vmedians[i].second));
+	      apvNb++;
+	    }
+	  }
+	  apvDetSet.push_back(SiStripProcessedRawDigi(vmedians[i].second));
+	  //std::cout << "CM patch in VR " << rawDigis->id << " " << vmedians[i].first << " " << vmedians[i].second << " " << apvNb<< std::endl;
+	  apvNb++;
 	}
+      
 	if(apvDetSet.size())
 	  output_apvcm.push_back(apvDetSet);
       }
     } else 
       
-    throw cms::Exception("Unknown input type") 
-      << inputTag.instance() << " unknown.  SiStripZeroZuppression can only process types \"VirginRaw\" and \"ProcessedRaw\" ";
+      throw cms::Exception("Unknown input type") 
+	<< inputTag.instance() << " unknown.  SiStripZeroZuppression can only process types \"VirginRaw\" and \"ProcessedRaw\" ";
     
 
     if (suppressedDigis.size()) 
       output.push_back(suppressedDigis); 
-
+    
   }
 }
