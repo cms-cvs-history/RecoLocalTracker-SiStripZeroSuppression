@@ -84,7 +84,7 @@ processRaw(const edm::InputTag& inputTag, const edm::DetSetVector<SiStripRawDigi
 	for(size_t i=0;i<vmedians.size();++i){
 	  if(vmedians[i].first>apvNb){
 	    for(int i=0;i<vmedians[i].first-apvNb;++i){
-	      apvDetSet.push_back(SiStripProcessedRawDigi(vmedians[i].second));
+	      apvDetSet.push_back(SiStripProcessedRawDigi(0.));
 	      apvNb++;
 	    }
 	  }
