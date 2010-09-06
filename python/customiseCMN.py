@@ -10,6 +10,14 @@ def customiseMedian(process):
 
 
 ##############################################################################
+def customiseAPVRestore(process):
+
+    process.siStripZeroSuppression.doAPVRestore = cms.bool(True)
+    process.siStripZeroSuppression.Algorithms.restoreThreshold = cms.double(0.5)
+
+    return process
+
+##############################################################################
 def customiseIteratedMedian(process):
 
     process.siStripZeroSuppression.Algorithms.CommonModeNoiseSubtractionMode=cms.string("IteratedMedian")

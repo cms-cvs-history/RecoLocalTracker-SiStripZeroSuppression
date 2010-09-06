@@ -16,7 +16,8 @@ create(const edm::ParameterSet& conf) {
 	           new SiStripRawProcessingAlgorithms(
 						      create_SubtractorPed(conf),
 						      create_SubtractorCMN(conf),
-						      create_Suppressor(conf)     ));
+						      create_Suppressor(conf),
+                                                      create_Restorer(conf)     ));
 }
 
 std::auto_ptr<SiStripPedestalsSubtractor> SiStripRawProcessingFactory::
@@ -63,5 +64,12 @@ create_Suppressor(const edm::ParameterSet& conf) {
   default:
     throw cms::Exception("Unregistered mode") << "SiStripFedZeroSuppression has modes 1,2,3,4.";
   }
+}
+
+std::auto_ptr<SiStripAPVRestorer> SiStripRawProcessingFactory::
+create_Restorer( const edm::ParameterSet& conf) {
+  double restoreThreshold = 999.;
+  if( conf.exists("restoreThreshold") ) restoreThreshold = conf.getParameter<double>("restoreThreshold");
+  return std::auto_ptr<SiStripAPVRestorer>( new SiStripAPVRestorer( restoreThreshold ));
 }
 
