@@ -22,7 +22,8 @@ create(const edm::ParameterSet& conf) {
 
 std::auto_ptr<SiStripPedestalsSubtractor> SiStripRawProcessingFactory::
 create_SubtractorPed(const edm::ParameterSet& conf) {
-  return std::auto_ptr<SiStripPedestalsSubtractor>( new SiStripPedestalsSubtractor() );
+  bool fedMode = conf.getParameter<bool>("PedestalSubtractionFedMode");
+  return std::auto_ptr<SiStripPedestalsSubtractor>( new SiStripPedestalsSubtractor(fedMode) );
 }
 
 std::auto_ptr<SiStripCommonModeNoiseSubtractor> SiStripRawProcessingFactory::
