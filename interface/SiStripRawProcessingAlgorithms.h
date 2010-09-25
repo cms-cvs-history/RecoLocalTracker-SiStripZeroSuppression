@@ -18,8 +18,8 @@ struct SiStripRawProcessingAlgorithms {
     subtractorPed->init(es);
     subtractorCMN->init(es);
     suppressor->init(es);
-    restorer->init(es);
-  }
+    if(restorer.get()) restorer->init(es);
+  } 
 
   private:
   SiStripRawProcessingAlgorithms(std::auto_ptr<SiStripPedestalsSubtractor> ped,

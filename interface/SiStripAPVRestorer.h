@@ -8,44 +8,61 @@
 #include "DataFormats/Common/interface/DetSet.h"
 #include "DataFormats/SiStripDigi/interface/SiStripProcessedRawDigi.h"
 
-
 #include <vector>
-//#include <algorithm>
 #include <stdint.h>
-
-class SiStripQuality;
 
 class SiStripAPVRestorer {
 
  friend class SiStripRawProcessingFactory;
 
-
  public:
   
-  SiStripAPVRestorer( double rt)
-  : restoreThreshold_(rt)
-  {};
-  ~SiStripAPVRestorer() {};
-  void init(const edm::EventSetup& es);
-  void inspect(const uint32_t&, std::vector<int16_t>&);
-  void inspect(const uint32_t&, std::vector<float>&);
-  void restore(std::vector<int16_t>&);
-  void restore(std::vector<float>&);
-  
-  void fixAPVsCM(edm::DetSet<SiStripProcessedRawDigi>& );
-  
- private:
+  virtual ~SiStripAPVRestorer() {};
 
-  template<typename T >void inspect_(const uint32_t&,std::vector<T>&);
-  template<typename T >void restore_(std::vector<T>&);
-
+  virtual void init(const edm::EventSetup& es) = 0;
+  virtual void inspect(const uint32_t&, std::vector<int16_t>&) = 0;
+  virtual void inspect(const uint32_t&, std::vector<float>&) = 0;
+  virtual void restore(std::vector<int16_t>&) = 0;
+  virtual void restore(std::vector<float>&) = 0;
+  virtual void fixAPVsCM(edm::DetSet<SiStripProcessedRawDigi>& cmdigis) {
   
-  std::vector<bool> apvKills;
-
-  edm::ESHandle<SiStripQuality> qualityHandle;
-  uint32_t  quality_cache_id;
+    // cmdigis should be the same size as apvFlags
+    // otherwise something pathological has happened and we do nothing
+    if ( cmdigis.size() != apvFlags.size() ) return;
+    
+    edm::DetSet<SiStripProcessedRawDigi>::iterator cm_iter = cmdigis.begin();
+    std::vector<int16_t>::const_iterator apvf_iter = apvFlags.begin();
+    
+    // No way to change the adc value of a SiStripProcessedRawDigi
+    // so we just extract the values, clear the DetSet, and
+    // replace with the proper values.
+    
+    std::vector<float> cmvalues;
+    for( ; cm_iter != cmdigis.end(); ++cm_iter  ) cmvalues.push_back( (*cm_iter).adc() );
+    cmdigis.clear();
+    
+    std::vector<float>::const_iterator cmv_iter = cmvalues.begin();
+    while( apvf_iter != apvFlags.end() )
+      {
+	if( *apvf_iter > 0) {
+	  std::cout << "  apvFlag was " << *apvf_iter << std::endl;
+	  std::cout << "  baseline was " << *cmv_iter << std::endl;
+	  cmdigis.push_back( SiStripProcessedRawDigi( -999.) );
+	}
+	else
+	  cmdigis.push_back( SiStripProcessedRawDigi( *cmv_iter ) );
+	apvf_iter++;
+	cmv_iter++;
+      }
+  };
   
-  double restoreThreshold_;
+  
+ protected:
+
+  SiStripAPVRestorer(){};
+
+  std::vector<int16_t> apvFlags;
+
 };
 
 #endif

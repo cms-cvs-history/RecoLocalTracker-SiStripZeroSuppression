@@ -7,6 +7,5 @@ siStripZeroSuppression = cms.EDProducer("SiStripZeroSuppression",
                                         RawDigiProducersList = cms.VInputTag( cms.InputTag('siStripDigis','VirginRaw'), 
                                                                               cms.InputTag('siStripDigis','ProcessedRaw'),
                                                                               cms.InputTag('siStripDigis','ScopeMode')),
-                                        storeCM = cms.bool(False),
-                                        doAPVRestore = cms.bool(False)
+                                        storeCM = cms.bool(False)
                                         )

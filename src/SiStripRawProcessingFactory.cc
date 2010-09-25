@@ -9,6 +9,7 @@
 #include "RecoLocalTracker/SiStripZeroSuppression/interface/IteratedMedianCMNSubtractor.h"
 #include "RecoLocalTracker/SiStripZeroSuppression/interface/FastLinearCMNSubtractor.h"
 #include "RecoLocalTracker/SiStripZeroSuppression/interface/TT6CMNSubtractor.h"
+#include "RecoLocalTracker/SiStripZeroSuppression/interface/FlatAPVRestorer.h"
 
 std::auto_ptr<SiStripRawProcessingAlgorithms> SiStripRawProcessingFactory::
 create(const edm::ParameterSet& conf) {
@@ -17,7 +18,7 @@ create(const edm::ParameterSet& conf) {
 						      create_SubtractorPed(conf),
 						      create_SubtractorCMN(conf),
 						      create_Suppressor(conf),
-                                                      create_Restorer(conf)     ));
+                                                      create_Restorer(conf) ));
 }
 
 std::auto_ptr<SiStripPedestalsSubtractor> SiStripRawProcessingFactory::
@@ -69,8 +70,20 @@ create_Suppressor(const edm::ParameterSet& conf) {
 
 std::auto_ptr<SiStripAPVRestorer> SiStripRawProcessingFactory::
 create_Restorer( const edm::ParameterSet& conf) {
-  double restoreThreshold = 999.;
-  if( conf.exists("restoreThreshold") ) restoreThreshold = conf.getParameter<double>("restoreThreshold");
-  return std::auto_ptr<SiStripAPVRestorer>( new SiStripAPVRestorer( restoreThreshold ));
+
+  if(!conf.exists("APVRestoreMode")) {
+    return std::auto_ptr<SiStripAPVRestorer>( 0 );
+  } else {
+    std::string mode = conf.getParameter<std::string>("APVRestoreMode");
+
+    if( mode == "Flat") {
+      double restoreThreshold = 999.;
+      if( conf.exists("restoreThreshold") ) restoreThreshold = conf.getParameter<double>("restoreThreshold");
+      return std::auto_ptr<SiStripAPVRestorer>( new FlatAPVRestorer( restoreThreshold ));
+    }
+
+    throw cms::Exception("Unregistered Algorithm") << "SiStripAPVRestorer possibilities: (Flat)";
+
+  }
 }
 

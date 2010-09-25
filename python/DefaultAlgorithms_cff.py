@@ -3,7 +3,9 @@ import FWCore.ParameterSet.Config as cms
 DefaultAlgorithms = cms.PSet(
     PedestalSubtractionFedMode = cms.bool(True),
     SiStripFedZeroSuppressionMode = cms.uint32(4),
-    CommonModeNoiseSubtractionMode = cms.string('Median') ##Supported modes: Median, Percentile, IteratedMedian, TT6, FastLinear
+
+    ##Supported CMN modes: Median, Percentile, IteratedMedian, TT6, FastLinear
+    CommonModeNoiseSubtractionMode = cms.string('Median') 
     
     #CutToAvoidSignal = cms.double(3.0), ## for TT6
     
