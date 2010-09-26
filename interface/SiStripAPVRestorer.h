@@ -31,7 +31,7 @@ class SiStripAPVRestorer {
     if ( cmdigis.size() != apvFlags.size() ) return;
     
     edm::DetSet<SiStripProcessedRawDigi>::iterator cm_iter = cmdigis.begin();
-    std::vector<int16_t>::const_iterator apvf_iter = apvFlags.begin();
+    std::vector<bool>::const_iterator apvf_iter = apvFlags.begin();
     
     // No way to change the adc value of a SiStripProcessedRawDigi
     // so we just extract the values, clear the DetSet, and
@@ -44,7 +44,7 @@ class SiStripAPVRestorer {
     std::vector<float>::const_iterator cmv_iter = cmvalues.begin();
     while( apvf_iter != apvFlags.end() )
       {
-	if( *apvf_iter > 0) {
+	if( *apvf_iter) {
 	  std::cout << "  apvFlag was " << *apvf_iter << std::endl;
 	  std::cout << "  baseline was " << *cmv_iter << std::endl;
 	  cmdigis.push_back( SiStripProcessedRawDigi( -999.) );
@@ -61,7 +61,7 @@ class SiStripAPVRestorer {
 
   SiStripAPVRestorer(){};
 
-  std::vector<int16_t> apvFlags;
+  std::vector<bool> apvFlags;
 
 };
 

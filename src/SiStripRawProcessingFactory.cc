@@ -10,6 +10,7 @@
 #include "RecoLocalTracker/SiStripZeroSuppression/interface/FastLinearCMNSubtractor.h"
 #include "RecoLocalTracker/SiStripZeroSuppression/interface/TT6CMNSubtractor.h"
 #include "RecoLocalTracker/SiStripZeroSuppression/interface/FlatAPVRestorer.h"
+#include "RecoLocalTracker/SiStripZeroSuppression/interface/PartialSuppressAPVRestorer.h"
 
 std::auto_ptr<SiStripRawProcessingAlgorithms> SiStripRawProcessingFactory::
 create(const edm::ParameterSet& conf) {
@@ -60,9 +61,10 @@ create_SubtractorCMN(const edm::ParameterSet& conf) {
 std::auto_ptr<SiStripFedZeroSuppression> SiStripRawProcessingFactory::
 create_Suppressor(const edm::ParameterSet& conf) {
   uint32_t mode = conf.getParameter<uint32_t>("SiStripFedZeroSuppressionMode");
+  bool trunc = conf.getParameter<bool>("TruncateInSuppressor");
   switch(mode) {
   case 1: case 2: case 3:  case 4:
-    return std::auto_ptr<SiStripFedZeroSuppression>( new SiStripFedZeroSuppression(mode));
+    return std::auto_ptr<SiStripFedZeroSuppression>( new SiStripFedZeroSuppression(mode,trunc));
   default:
     throw cms::Exception("Unregistered mode") << "SiStripFedZeroSuppression has modes 1,2,3,4.";
   }
@@ -77,9 +79,14 @@ create_Restorer( const edm::ParameterSet& conf) {
     std::string mode = conf.getParameter<std::string>("APVRestoreMode");
 
     if( mode == "Flat") {
-      double restoreThreshold = 999.;
-      if( conf.exists("restoreThreshold") ) restoreThreshold = conf.getParameter<double>("restoreThreshold");
+      double restoreThreshold = conf.getParameter<double>("restoreThreshold");
       return std::auto_ptr<SiStripAPVRestorer>( new FlatAPVRestorer( restoreThreshold ));
+    }
+
+    if( mode == "PartialSuppress") {
+      double fraction = conf.getParameter<double>("Fraction");
+      int deviation = conf.getParameter<int>("Deviation");
+      return std::auto_ptr<SiStripAPVRestorer>( new PartialSuppressAPVRestorer( fraction, deviation ));
     }
 
     throw cms::Exception("Unregistered Algorithm") << "SiStripAPVRestorer possibilities: (Flat)";

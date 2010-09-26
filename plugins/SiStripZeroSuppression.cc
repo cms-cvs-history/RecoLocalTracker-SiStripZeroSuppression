@@ -73,6 +73,26 @@ processRaw(const edm::InputTag& inputTag, const edm::DetSetVector<SiStripRawDigi
       algorithms->subtractorCMN->subtract( rawDigis->id, processedRawDigis);
       if( algorithms->restorer.get() ) algorithms->restorer->restore( processedRawDigis );
       algorithms->suppressor->suppress( processedRawDigis, suppressedDigis );
+
+      if(storeCM){
+	const std::vector< std::pair<short,float> >& vmedians = algorithms->subtractorCMN->getAPVsCM();
+	edm::DetSet<SiStripProcessedRawDigi> apvDetSet(rawDigis->id);
+	short apvNb=0;
+	for(size_t i=0;i<vmedians.size();++i){
+	  if(vmedians[i].first>apvNb){
+	    for(int i=0;i<vmedians[i].first-apvNb;++i){
+	      apvDetSet.push_back(SiStripProcessedRawDigi(0.));
+	      apvNb++;
+	    }
+	  }
+	  apvDetSet.push_back(SiStripProcessedRawDigi(vmedians[i].second));
+	  apvNb++;
+	}
+        if(algorithms->restorer.get()) algorithms->restorer->fixAPVsCM( apvDetSet ); 
+	if(apvDetSet.size())
+	  output_apvcm.push_back(apvDetSet);
+      }
+
     } else
 
     if ( "VirginRaw" == inputTag.instance()) {
