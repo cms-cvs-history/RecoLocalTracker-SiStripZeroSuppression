@@ -3,11 +3,11 @@ import FWCore.ParameterSet.Config as cms
 DefaultAlgorithms = cms.PSet(
 
     ## Pedestal subtraction ----------------
-    PedestalSubtractionFedMode = cms.bool(True),
+    PedestalSubtractionFedMode = cms.bool(False),
 
     ## Baseline finder ---------------------
     ## Supported CMN modes: Median, Percentile, IteratedMedian, TT6, FastLinear
-    CommonModeNoiseSubtractionMode = cms.string('Median'),     
+    CommonModeNoiseSubtractionMode = cms.string('IterativeMedian'),     
 
     #CutToAvoidSignal = cms.double(3.0), ## for TT6
     
@@ -23,7 +23,7 @@ DefaultAlgorithms = cms.PSet(
     SelfSelectRestoreAlgo = cms.bool(False),
     useRealMeanCM = cms.bool(False),
     DeltaCMThreshold = cms.uint32(20),       # for BaselineFollower inspect
-    distortionThreshold = cms.uint32(40),    # " "
+    distortionThreshold = cms.uint32(20),    # " "
     Fraction = cms.double(0.2),              # for AbnormalBaseline inspect
     Deviation = cms.uint32(25),              # " "
     restoreThreshold = cms.double(0.5),      # for Null inspect

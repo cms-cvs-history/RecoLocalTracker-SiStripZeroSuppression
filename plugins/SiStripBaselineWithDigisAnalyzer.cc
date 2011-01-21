@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    SiStripBaselineAnalyzer
-// Class:      SiStripBaselineAnalyzer
+// Package:    SiStripBaselineWithDigisAnalyzer
+// Class:      SiStripBaselineWithDigisAnalyzer
 // 
-/**\class SiStripBaselineAnalyzer SiStripBaselineAnalyzer.cc Validation/SiStripAnalyzer/src/SiStripBaselineAnalyzer.cc
+/**\class SiStripBaselineWithDigisAnalyzer SiStripBaselineWithDigisAnalyzer.cc Validation/SiStripAnalyzer/src/SiStripBaselineWithDigisAnalyzer.cc
 
  Description: <one line class summary>
 
@@ -13,7 +13,7 @@
 //
 // Original Author:  Ivan Amos Cali
 //         Created:  Mon Jul 28 14:10:52 CEST 2008
-// $Id: SiStripBaselineAnalyzer.cc,v 1.2 2010/11/14 22:54:37 edwenger Exp $
+// $Id: SiStripBaselineWithDigisAnalyzer.cc,v 1.2 2010/11/14 22:54:37 edwenger Exp $
 //
 //
  
@@ -69,10 +69,10 @@
 // class decleration
 //
 
-class SiStripBaselineAnalyzer : public edm::EDAnalyzer {
+class SiStripBaselineWithDigisAnalyzer : public edm::EDAnalyzer {
    public:
-      explicit SiStripBaselineAnalyzer(const edm::ParameterSet&);
-      ~SiStripBaselineAnalyzer();
+      explicit SiStripBaselineWithDigisAnalyzer(const edm::ParameterSet&);
+      ~SiStripBaselineWithDigisAnalyzer();
 
 
    private:
@@ -92,21 +92,19 @@ class SiStripBaselineAnalyzer : public edm::EDAnalyzer {
 	  TH1F* h1BadAPVperEvent_;
 	  
 	  TH1F* h1ProcessedRawDigis_;
+	  TH1F* h1Digis_;
 	  TH1F* h1Baseline_;
 	  TH1F* h1Clusters_;
 	  	  
 	  
 	  TCanvas* Canvas_;
-	  std::vector<TH1F> vProcessedRawDigiHisto_;
-	  std::vector<TH1F> vBaselineHisto_;
-	  std::vector<TH1F> vClusterHisto_;
-	  
+	   
 	  uint16_t nModuletoDisplay_;
 	  uint16_t actualModule_;
 };
 
 
-SiStripBaselineAnalyzer::SiStripBaselineAnalyzer(const edm::ParameterSet& conf){
+SiStripBaselineWithDigisAnalyzer::SiStripBaselineWithDigisAnalyzer(const edm::ParameterSet& conf){
    
   srcBaseline_ =  conf.getParameter<edm::InputTag>( "srcBaseline" );
   srcProcessedRawDigi_ =  conf.getParameter<edm::InputTag>( "srcProcessedRawDigi" );
@@ -126,7 +124,7 @@ SiStripBaselineAnalyzer::SiStripBaselineAnalyzer(const edm::ParameterSet& conf){
 }
 
 
-SiStripBaselineAnalyzer::~SiStripBaselineAnalyzer()
+SiStripBaselineWithDigisAnalyzer::~SiStripBaselineWithDigisAnalyzer()
 {
  
    
@@ -134,7 +132,7 @@ SiStripBaselineAnalyzer::~SiStripBaselineAnalyzer()
 }
 
 void
-SiStripBaselineAnalyzer::analyze(const edm::Event& e, const edm::EventSetup& es)
+SiStripBaselineWithDigisAnalyzer::analyze(const edm::Event& e, const edm::EventSetup& es)
 {
    using namespace edm;
    
@@ -163,6 +161,7 @@ SiStripBaselineAnalyzer::analyze(const edm::Event& e, const edm::EventSetup& es)
    TFileDirectory sdProcessedRawDigis_= fs_->mkdir("ProcessedRawDigis");
    TFileDirectory sdBaseline_= fs_->mkdir("Baseline");
    TFileDirectory sdClusters_= fs_->mkdir("Clusters");
+   TFileDirectory sdDigis_= fs_->mkdir("Digis");
  
    edm::DetSetVector<SiStripProcessedRawDigi>::const_iterator itDSBaseline = moduleBaseline->begin();
    edm::DetSetVector<SiStripRawDigi>::const_iterator itRawDigis = moduleRawDigi->begin();
@@ -175,10 +174,10 @@ SiStripBaselineAnalyzer::analyze(const edm::Event& e, const edm::EventSetup& es)
       if(actualModule_ > nModuletoDisplay_) return;
       uint32_t detId = itRawDigis->id;
 	  
-	  //std::cout << "bas id: " << itDSBaseline->id << " raw id: " << detId << std::endl;
+	  std::cout << "bas id: " << itDSBaseline->id << " raw id: " << detId << std::endl;
       if(itDSBaseline->id != detId){
 		std::cout << "Collections out of Synch. Something of fishy is going on ;-)" << std::endl;
-		return;
+	//	return;
       }	  
       
 	  actualModule_++;
@@ -186,48 +185,16 @@ SiStripBaselineAnalyzer::analyze(const edm::Event& e, const edm::EventSetup& es)
 	  uint32_t run = e.id().run();
 	  //std::cout << "processing module N: " << actualModule_<< " detId: " << detId << " event: "<< event << std::endl; 
 	  
-
-	 
-	
-	  
-	  edm::DetSet<SiStripProcessedRawDigi>::const_iterator  itBaseline; 
-	  std::vector<int16_t>::const_iterator itProcessedRawDigis;
-	  
-	  edm::DetSet<SiStripRawDigi>::const_iterator itRaw = itRawDigis->begin(); 
-	  bool restAPV[6] = {0,0,0,0,0,0};
-	  int strip =0, totADC=0;
-      int minAPVRes = 7, maxAPVRes = -1;
-      for(;itRaw != itRawDigis->end(); ++itRaw, ++strip){
-      	float adc = itRaw->adc();
-      	totADC+= adc;
-      	if(strip%127 ==0){
-      		//std::cout << "totADC " << totADC << std::endl;
-      	    int APV = strip/128;
-      	    if(totADC!= 0){
-      	    	restAPV[APV] = true;
-      			totADC =0;
-      			if(APV>maxAPVRes) maxAPVRes = APV;
-      			if(APV<minAPVRes) minAPVRes = APV;
-      		}
-      	}
-      }
-
-      uint16_t bins =768;
-      float minx = -0.5, maxx=767.5;
-      if(minAPVRes !=7){
-      	minx = minAPVRes * 128 -0.5;
-      	maxx = maxAPVRes * 128 + 127.5;
-      	bins = maxx-minx;
-      }
 	  sprintf(detIds,"%ul", detId);
 	  sprintf(evs,"%ul", event);
 	  sprintf(runs,"%ul", run);
 	  char* dHistoName = Form("Id:%s_run:%s_ev:%s",detIds, runs, evs);
-	  h1ProcessedRawDigis_ = sdProcessedRawDigis_.make<TH1F>(dHistoName,dHistoName, bins, minx, maxx); 
-	  h1Baseline_ = sdBaseline_.make<TH1F>(dHistoName,dHistoName, bins, minx, maxx); 
+	  h1ProcessedRawDigis_ = sdProcessedRawDigis_.make<TH1F>(dHistoName,dHistoName, 768, -0.5, 767.5); 
+	  h1Digis_ = sdDigis_.make<TH1F>(dHistoName,dHistoName, 768, -0.5, 767.5); 
+	  h1Baseline_ = sdBaseline_.make<TH1F>(dHistoName,dHistoName, 768, -0.5, 767.5); 
       
       if(plotClusters_){
-        h1Clusters_ = sdClusters_.make<TH1F>(dHistoName,dHistoName, bins, minx, maxx);
+        h1Clusters_ = sdClusters_.make<TH1F>(dHistoName,dHistoName, 768, -0.5, 767.5);
 	  
         h1Clusters_->SetXTitle("strip#");
         h1Clusters_->SetYTitle("ADC");
@@ -244,6 +211,12 @@ SiStripBaselineAnalyzer::analyze(const edm::Event& e, const edm::EventSetup& es)
       h1ProcessedRawDigis_->SetMinimum(-300.);
 	  h1ProcessedRawDigis_->SetLineWidth(2);
 
+	  
+	  h1Digis_->SetXTitle("strip#");  
+	  h1Digis_->SetYTitle("ADC");
+	  h1Digis_->SetMaximum(1024.);
+      h1Digis_->SetMinimum(-300.);
+	  h1Digis_->SetLineWidth(2);
    
       h1Baseline_->SetXTitle("strip#");
       h1Baseline_->SetYTitle("ADC");
@@ -252,22 +225,24 @@ SiStripBaselineAnalyzer::analyze(const edm::Event& e, const edm::EventSetup& es)
       h1Baseline_->SetLineWidth(2);
 	  h1Baseline_->SetLineStyle(2);
 	  h1Baseline_->SetLineColor(2);
+	 
+	
+	  
+	  edm::DetSet<SiStripProcessedRawDigi>::const_iterator  itBaseline; 
+	  std::vector<int16_t>::const_iterator itProcessedRawDigis;
+	  
+	  //edm::DetSet<SiStripRawDigi>::const_iterator itRaw = itRawDigis->begin(); 
 	  std::vector<int16_t> ProcessedRawDigis(itRawDigis->size());
 	  subtractorPed_->subtract( *itRawDigis, ProcessedRawDigis);
 	  
 	  
-	  strip =0;      
+	  int strip =0;
       for(itProcessedRawDigis = ProcessedRawDigis.begin(), itBaseline = itDSBaseline->begin();itProcessedRawDigis != ProcessedRawDigis.end(); ++itProcessedRawDigis, ++itBaseline){
         //for(itBaseline = itDSBaseline->begin();itBaseline != itDSBaseline->end(); ++itBaseline, ++itRaw){
-		
-		if(restAPV[strip/128]){
-			
-			// float adc = itRaw->adc();
-			float adc = *itProcessedRawDigis;       
-			//std::cout << "APV RESTORED!!!! " << adc << std::endl;
-            h1ProcessedRawDigis_->Fill(strip, adc);
-			h1Baseline_->Fill(strip, itBaseline->adc()); 
-		}
+		h1ProcessedRawDigis_->Fill(strip, *itProcessedRawDigis);
+       // float adc = itRaw->adc();
+        //h1ProcessedRawDigis_->Fill(strip, adc);
+		h1Baseline_->Fill(strip, itBaseline->adc()); 
 		++strip;
       }	  
 	  
@@ -296,7 +271,7 @@ SiStripBaselineAnalyzer::analyze(const edm::Event& e, const edm::EventSetup& es)
 
 
 // ------------ method called once each job just before starting event loop  ------------
-void SiStripBaselineAnalyzer::beginJob()
+void SiStripBaselineWithDigisAnalyzer::beginJob()
 {
   
   
@@ -307,10 +282,10 @@ void SiStripBaselineAnalyzer::beginJob()
 
 // ------------ method called once each job just after ending the event loop  ------------
 void 
-SiStripBaselineAnalyzer::endJob() {
+SiStripBaselineWithDigisAnalyzer::endJob() {
      
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(SiStripBaselineAnalyzer);
+DEFINE_FWK_MODULE(SiStripBaselineWithDigisAnalyzer);
 
