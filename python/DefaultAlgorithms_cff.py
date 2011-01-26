@@ -7,7 +7,7 @@ DefaultAlgorithms = cms.PSet(
 
     ## Baseline finder ---------------------
     ## Supported CMN modes: Median, Percentile, IteratedMedian, TT6, FastLinear
-    CommonModeNoiseSubtractionMode = cms.string('IterativeMedian'),     
+    CommonModeNoiseSubtractionMode = cms.string('IteratedMedian'),     
 
     #CutToAvoidSignal = cms.double(3.0), ## for TT6
     
