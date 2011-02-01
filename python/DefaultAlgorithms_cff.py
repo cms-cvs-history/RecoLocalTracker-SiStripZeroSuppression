@@ -36,9 +36,11 @@ DefaultAlgorithms = cms.PSet(
     hitStripThreshold = cms.uint32(40),      # height above median when strip is definitely a hit
     nSmooth = cms.uint32(9),                 # for smoothing and local minimum determination (odd number)
     minStripsToFit = cms.uint32(4),          # minimum strips to try spline algo (otherwise default to median)
+    ApplyBaselineCleaner = cms.bool(True),
     
     ## Zero suppression --------------------
     SiStripFedZeroSuppressionMode = cms.uint32(4),
     TruncateInSuppressor = cms.bool(True)
     
     )
+
