@@ -392,8 +392,8 @@ bool inline SiStripAPVRestorer::FlatRegionsFinder(std::vector<int16_t>& adcs, Di
   for(uint32_t istrip=0; istrip<128; ++istrip) {    
     int16_t adc = adcs[istrip]; 
  
-   if( adcsLocalMinSubtracted[istrip] < nSigmaNoiseDerTh_ * (float)noiseHandle->getNoise(istrip+APVn*128,detNoiseRange) && (adc - median) < hitStripThreshold_){
-      //if( adcsLocalMinSubtracted[istrip] < nSigmaNoiseDerTh_ * (float)noiseHandle->getNoiseFast(istrip+APVn*128,detNoiseRange)){
+   //if( adcsLocalMinSubtracted[istrip] < nSigmaNoiseDerTh_ * (float)noiseHandle->getNoise(istrip+APVn*128,detNoiseRange) && (adc - median) < hitStripThreshold_){
+   if( adcsLocalMinSubtracted[istrip] < nSigmaNoiseDerTh_ * (float)noiseHandle->getNoise(istrip+APVn*128,detNoiseRange)){
       consecpoints.insert(consecpoints.end(), std::pair<uint16_t, int16_t >(istrip, adc));
       ++consecStrips;
     }else if (consecStrips >0){
@@ -472,8 +472,9 @@ void inline SiStripAPVRestorer::BaselineCleaner(std::vector<int16_t>& adcs, Digi
       	float adc1 = itSmoothedpoints->second;
       	float adc2 = itSmoothedpointsNext->second;
 	  	float m = (adc2 -adc1)/(strip2 -strip1);
-		
-		if(m >2){
+	  	
+	  	/*
+	  	if(m >2){
 		    smoothedpoints.erase(itSmoothedpointsNext);
 			if(itSmoothedpoints != itSmoothedpointsBegin) --itSmoothedpoints;
 			itSmoothedpointsEnd = --(smoothedpoints.end());
@@ -482,8 +483,24 @@ void inline SiStripAPVRestorer::BaselineCleaner(std::vector<int16_t>& adcs, Digi
 			if(itSmoothedpoints != itSmoothedpointsBegin) --itSmoothedpoints;
 			itSmoothedpointsEnd = --(smoothedpoints.end());
 		}
+		*/
 		
-		
+		if(m >2){
+		   	smoothedpoints.erase(itSmoothedpointsNext);
+			--itSmoothedpoints;
+			itSmoothedpointsEnd = --(smoothedpoints.end());
+		}else if (m<-2){
+			smoothedpoints.erase(itSmoothedpoints);
+			if(itSmoothedpoints == itSmoothedpointsBegin){
+				itSmoothedpoints = smoothedpoints.begin();
+			} else {
+			  	--itSmoothedpoints;
+			}
+			
+			--itSmoothedpoints;
+			itSmoothedpointsEnd = --(smoothedpoints.end());
+		}
+			
     }
     
 
