@@ -435,7 +435,8 @@ bool inline SiStripAPVRestorer::FlatRegionsFinder(std::vector<int16_t>& adcs, Di
      }
      ++itConsecpoints;  //and putting the pointer to the new seies of point 
       
-     if(smoothValue>0){
+     if(stripCount>1) {
+     //if(smoothValue>0){
 		--stripCount;
 		smoothValue /= (float)(stripCount);
 		nLastStrip = nFirstStrip + stripCount -1;
