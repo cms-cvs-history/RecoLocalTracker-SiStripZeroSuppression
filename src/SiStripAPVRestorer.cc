@@ -486,11 +486,14 @@ void inline SiStripAPVRestorer::BaselineCleaner(std::vector<int16_t>& adcs, Digi
 		}
 		*/
 		
-		if(m >2){
-		   	smoothedpoints.erase(itSmoothedpointsNext);
+		if(smoothedpoints.size() >= minStripsToFit_){
+		 if(m >2){
+			smoothedpoints.erase(itSmoothedpointsNext);
 			--itSmoothedpoints;
 			itSmoothedpointsEnd = --(smoothedpoints.end());
-		}else if (m<-2){
+		 }else if (m<-2){
+			//std::cout << " m <- 2 " << std::endl;
+			//std::cout << smoothedpoints.size() << std::endl;
 			smoothedpoints.erase(itSmoothedpoints);
 			if(itSmoothedpoints == itSmoothedpointsBegin){
 				itSmoothedpoints = smoothedpoints.begin();
@@ -500,6 +503,8 @@ void inline SiStripAPVRestorer::BaselineCleaner(std::vector<int16_t>& adcs, Digi
 			
 			--itSmoothedpoints;
 			itSmoothedpointsEnd = --(smoothedpoints.end());
+			//std::cout << " out of here " << std::endl;
+		 }
 		}
 			
     }
@@ -514,7 +519,7 @@ void inline SiStripAPVRestorer::BaselineCleaner(std::vector<int16_t>& adcs, Digi
     
 	itSmoothedpoints = itSmoothedpointsBegin;
     if(firstStripFlat >3){
-		float strip = 0;
+    	float strip = 0;
        	while(strip < firstStripFlat){
 			float adc = adcs[strip];
             if( adc < ( firstStripFlatADC - 2 * (float)noiseHandle->getNoise(strip+APVn*128,detNoiseRange))){
@@ -568,6 +573,7 @@ void inline SiStripAPVRestorer::BaselineCleaner(std::vector<int16_t>& adcs, Digi
 
 	    }
 	}
+	//std::cout << " exiting cleaner " << std::endl;
 }
 
 void inline SiStripAPVRestorer::BaselineFollower(DigiMap& smoothedpoints, std::vector<int16_t>& baseline, float median){
