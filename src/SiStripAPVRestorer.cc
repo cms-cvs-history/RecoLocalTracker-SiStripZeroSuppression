@@ -120,14 +120,14 @@ int16_t SiStripAPVRestorer::BaselineFollowerInspect(std::vector<T>& digis){
   
   std::vector<T> singleAPVdigi;
   singleAPVdigi.clear();
-  
-  
+ 
   int16_t nAPVflagged = 0;
   
   CMMap::iterator itCMMap;
   if(useRealMeanCM_) itCMMap = MeanCMmap_.find(detId_);
   
   for( uint16_t APV=0; APV< digis.size()/128; ++APV){
+
     DigiMap smoothedmap;
     apvFlags_.push_back( "" );
     
@@ -461,41 +461,53 @@ bool inline SiStripAPVRestorer::FlatRegionsFinder(std::vector<int16_t>& adcs, Di
 void inline SiStripAPVRestorer::BaselineCleaner(std::vector<int16_t>& adcs, DigiMap& smoothedpoints, uint16_t APVn){
 	SiStripNoises::Range detNoiseRange = noiseHandle->getRange(detId_);
 
-   	DigiMapIter itSmoothedpoints, itSmoothedpointsBegin, itSmoothedpointsEnd;
-    itSmoothedpointsBegin = smoothedpoints.begin();
-    itSmoothedpointsEnd = --(smoothedpoints.end());
-      	
-       bool isBegin = true; 
-    for(itSmoothedpoints = itSmoothedpointsBegin; itSmoothedpoints != itSmoothedpointsEnd; ++itSmoothedpoints){  
-       if(smoothedpoints.size() >= 2){
-    		if(isBegin){
-    			itSmoothedpoints = smoothedpoints.begin();
-    			isBegin = false;
-    		}
-    		DigiMapIter itSmoothedpointsNext = itSmoothedpoints;
-			++itSmoothedpointsNext;
+   	DigiMapIter itSmoothedpoints, itSmoothedpointsNext, itSmoothedpointsBegin, itSmoothedpointsEnd;
+	
+	bool verbose_ = false;
+	if (detId_ == 436311512 || detId_ == 470423209 || detId_ == 436245841) verbose_ = true;
+	std::cout << "\nDETID: " << detId_ << std::endl;
+	std::cout << "APV=" << APVn << std::endl;
+	std::cout << "smoothedpoints.size = " << smoothedpoints.size() << std::endl;
+	
+	itSmoothedpoints=smoothedpoints.begin();
+	while ( itSmoothedpoints != --(smoothedpoints.end()) ) { //while we are not at the last point
+	
+		// get info about current and next points
+		itSmoothedpointsNext = itSmoothedpoints;
+		++itSmoothedpointsNext;
+		float strip1 = itSmoothedpoints->first;
+      	float strip2 = itSmoothedpointsNext->first;
+      	float adc1 = itSmoothedpoints->second;
+      	float adc2 = itSmoothedpointsNext->second;
+	  	float m = (adc2 -adc1)/(strip2 -strip1);
+        if(verbose_) std::cout << "strip " << strip1 << "=" << adc1 << ", strip " << strip2 << "=" << adc2 << std::endl;
 		
-			float strip1 = itSmoothedpoints->first;
-      		float strip2 = itSmoothedpointsNext->first;
-      		float adc1 = itSmoothedpoints->second;
-      		float adc2 = itSmoothedpointsNext->second;
-	  		float m = (adc2 -adc1)/(strip2 -strip1);
-	 	
-	 	 	if(m >2){
-		    	smoothedpoints.erase(itSmoothedpointsNext);
-				--itSmoothedpoints;
-				itSmoothedpointsEnd = --(smoothedpoints.end());
-		 	}else if (m<-2){
-				smoothedpoints.erase(itSmoothedpoints);
-				if(itSmoothedpoints == itSmoothedpointsBegin) isBegin = true;
-				else --itSmoothedpoints;
-				
-				--itSmoothedpoints;
-				itSmoothedpointsEnd = --(smoothedpoints.end());
+		if (m>2) { // in case of large positive slope, remove next point and try again from same current point
 			
-		 	}
-	   	}
-	} 
+			if(verbose_) std::cout << "large positive slope... erasing point at strip " << itSmoothedpointsNext->first << std::endl;
+			smoothedpoints.erase(itSmoothedpointsNext);
+			
+		} else if (m<-2) { // in case of large negative slope, remove current point and either...
+			
+			if(verbose_)std::cout << "large negative slope... erasing point at strip " << itSmoothedpoints->first << std::endl;
+			// move to next point if we have reached the beginning (post-increment to avoid invalidating pointer during erase) or...
+			if(itSmoothedpoints==smoothedpoints.begin()) {smoothedpoints.erase(itSmoothedpoints++); if(verbose_) std::cout << "that was the first point we just removed, so increment pointer to strip " << itSmoothedpoints->first << std::endl;}
+			// try again from the previous point if we have not reached the beginning
+			else {smoothedpoints.erase(itSmoothedpoints--); if(verbose_) std::cout << "that was not the first point we just removed, so decrement the pointer to strip " << itSmoothedpoints->first << std::endl;}
+			
+		} else { // in case of a flat enough slope, continue on to the next point
+			
+			if(verbose_) std::cout << "passes slope test.  go to next strip";
+			itSmoothedpoints++;
+			if(verbose_) std::cout << " " << itSmoothedpoints->first << std::endl;
+		}
+		
+	}
+	
+	// these should be reset now for the point-insertion that follows
+	itSmoothedpointsBegin = smoothedpoints.begin();
+    itSmoothedpointsEnd = --(smoothedpoints.end());
+	
 
 	//insertineg extra point is case of local minimum
 	//--------------------------------------------------------------------------------------------------
@@ -504,9 +516,11 @@ void inline SiStripAPVRestorer::BaselineCleaner(std::vector<int16_t>& adcs, Digi
     int16_t firstStripFlatADC= itSmoothedpointsBegin->second;
     int16_t lastStripFlatADC= itSmoothedpointsEnd->second;
     
+	if(verbose_) std::cout << "first and last flat strips: " << firstStripFlat << " -> " << lastStripFlat << std::endl;
+	
 	itSmoothedpoints = itSmoothedpointsBegin;
     if(firstStripFlat >3){
-    	float strip = 0;
+		float strip = 0;
        	while(strip < firstStripFlat){
 			float adc = adcs[strip];
             if( adc < ( firstStripFlatADC - 2 * (float)noiseHandle->getNoise(strip+APVn*128,detNoiseRange))){
@@ -560,7 +574,6 @@ void inline SiStripAPVRestorer::BaselineCleaner(std::vector<int16_t>& adcs, Digi
 
 	    }
 	}
-	//std::cout << " exiting cleaner " << std::endl;
 }
 
 void inline SiStripAPVRestorer::BaselineFollower(DigiMap& smoothedpoints, std::vector<int16_t>& baseline, float median){
