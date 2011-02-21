@@ -461,6 +461,9 @@ bool inline SiStripAPVRestorer::FlatRegionsFinder(std::vector<int16_t>& adcs, Di
 void inline SiStripAPVRestorer::BaselineCleaner(std::vector<int16_t>& adcs, DigiMap& smoothedpoints, uint16_t APVn){
 	SiStripNoises::Range detNoiseRange = noiseHandle->getRange(detId_);
 
+	// only run the cleaner if there are enough points to start with
+	if(smoothedpoints.size() < 4) return;
+	
    	DigiMapIter itSmoothedpoints, itSmoothedpointsNext, itSmoothedpointsBegin, itSmoothedpointsEnd;
 	
 	itSmoothedpoints=smoothedpoints.begin();
@@ -493,7 +496,7 @@ void inline SiStripAPVRestorer::BaselineCleaner(std::vector<int16_t>& adcs, Digi
     itSmoothedpointsEnd = --(smoothedpoints.end());
 	
 
-	//insertineg extra point is case of local minimum
+	//inserting extra point is case of local minimum
 	//--------------------------------------------------------------------------------------------------
 	uint16_t firstStripFlat = itSmoothedpointsBegin->first;
     uint16_t lastStripFlat = itSmoothedpointsEnd->first;
