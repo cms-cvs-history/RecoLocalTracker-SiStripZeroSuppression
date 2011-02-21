@@ -465,50 +465,37 @@ void inline SiStripAPVRestorer::BaselineCleaner(std::vector<int16_t>& adcs, Digi
     itSmoothedpointsBegin = smoothedpoints.begin();
     itSmoothedpointsEnd = --(smoothedpoints.end());
       	
+       bool isBegin = true; 
     for(itSmoothedpoints = itSmoothedpointsBegin; itSmoothedpoints != itSmoothedpointsEnd; ++itSmoothedpoints){  
-    	DigiMapIter itSmoothedpointsNext = itSmoothedpoints;
-		++itSmoothedpointsNext;
-		float strip1 = itSmoothedpoints->first;
-      	float strip2 = itSmoothedpointsNext->first;
-      	float adc1 = itSmoothedpoints->second;
-      	float adc2 = itSmoothedpointsNext->second;
-	  	float m = (adc2 -adc1)/(strip2 -strip1);
-	  	
-	  	/*
-	  	if(m >2){
-		    smoothedpoints.erase(itSmoothedpointsNext);
-			if(itSmoothedpoints != itSmoothedpointsBegin) --itSmoothedpoints;
-			itSmoothedpointsEnd = --(smoothedpoints.end());
-		}else if (m<-2){
-			smoothedpoints.erase(itSmoothedpoints);
-			if(itSmoothedpoints != itSmoothedpointsBegin) --itSmoothedpoints;
-			itSmoothedpointsEnd = --(smoothedpoints.end());
-		}
-		*/
+       if(smoothedpoints.size() >= 2){
+    		if(isBegin){
+    			itSmoothedpoints = smoothedpoints.begin();
+    			isBegin = false;
+    		}
+    		DigiMapIter itSmoothedpointsNext = itSmoothedpoints;
+			++itSmoothedpointsNext;
 		
-		if(smoothedpoints.size() >= minStripsToFit_){
-		 if(m >2){
-			smoothedpoints.erase(itSmoothedpointsNext);
-			--itSmoothedpoints;
-			itSmoothedpointsEnd = --(smoothedpoints.end());
-		 }else if (m<-2){
-			//std::cout << " m <- 2 " << std::endl;
-			//std::cout << smoothedpoints.size() << std::endl;
-			smoothedpoints.erase(itSmoothedpoints);
-			if(itSmoothedpoints == itSmoothedpointsBegin){
-				itSmoothedpoints = smoothedpoints.begin();
-			} else {
-			  	--itSmoothedpoints;
-			}
+			float strip1 = itSmoothedpoints->first;
+      		float strip2 = itSmoothedpointsNext->first;
+      		float adc1 = itSmoothedpoints->second;
+      		float adc2 = itSmoothedpointsNext->second;
+	  		float m = (adc2 -adc1)/(strip2 -strip1);
+	 	
+	 	 	if(m >2){
+		    	smoothedpoints.erase(itSmoothedpointsNext);
+				--itSmoothedpoints;
+				itSmoothedpointsEnd = --(smoothedpoints.end());
+		 	}else if (m<-2){
+				smoothedpoints.erase(itSmoothedpoints);
+				if(itSmoothedpoints == itSmoothedpointsBegin) isBegin = true;
+				else --itSmoothedpoints;
+				
+				--itSmoothedpoints;
+				itSmoothedpointsEnd = --(smoothedpoints.end());
 			
-			--itSmoothedpoints;
-			itSmoothedpointsEnd = --(smoothedpoints.end());
-			//std::cout << " out of here " << std::endl;
-		 }
-		}
-			
-    }
-    
+		 	}
+	   	}
+	} 
 
 	//insertineg extra point is case of local minimum
 	//--------------------------------------------------------------------------------------------------
