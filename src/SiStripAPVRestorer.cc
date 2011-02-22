@@ -466,9 +466,20 @@ void inline SiStripAPVRestorer::BaselineCleaner(std::vector<int16_t>& adcs, Digi
 	
    	DigiMapIter itSmoothedpoints, itSmoothedpointsNext, itSmoothedpointsBegin, itSmoothedpointsEnd;
 	
+	bool printout = false;
+   // if(436311512 == detId_) printout = true;
+     if(printout){
+        itSmoothedpointsBegin = smoothedpoints.begin();
+     	std::cout << "start cleaning ============================= " << detId_ << " size " << smoothedpoints.size() << std::endl; 
+     	for(itSmoothedpoints = itSmoothedpointsBegin; itSmoothedpoints != smoothedpoints.end(); ++itSmoothedpoints){  
+     		std::cout << "strip " << itSmoothedpoints->first << " adc " << itSmoothedpoints->second << std::endl;
+     	}
+     	std::cout << "===============================================" << std::endl; 
+     }
+	
 	itSmoothedpoints=smoothedpoints.begin();
 	while ( itSmoothedpoints != --(smoothedpoints.end()) ) { //while we are not at the last point
-	
+	    if(smoothedpoints.size() <2) break;
 		// get info about current and next points
 		itSmoothedpointsNext = itSmoothedpoints;
 		++itSmoothedpointsNext;
@@ -477,7 +488,7 @@ void inline SiStripAPVRestorer::BaselineCleaner(std::vector<int16_t>& adcs, Digi
       	float adc1 = itSmoothedpoints->second;
       	float adc2 = itSmoothedpointsNext->second;
 	  	float m = (adc2 -adc1)/(strip2 -strip1);
-		
+		if(printout) std::cout << smoothedpoints.size() << " " << strip1 << " " << adc1 << " " << strip2 << " " << adc2 << std::endl;		
 		if (m>2) { // in case of large positive slope, remove next point and try again from same current point
 			smoothedpoints.erase(itSmoothedpointsNext);
 		} else if (m<-2) { // in case of large negative slope, remove current point and either...
@@ -491,13 +502,61 @@ void inline SiStripAPVRestorer::BaselineCleaner(std::vector<int16_t>& adcs, Digi
 		
 	}
 	
-	// these should be reset now for the point-insertion that follows
-	itSmoothedpointsBegin = smoothedpoints.begin();
-    itSmoothedpointsEnd = --(smoothedpoints.end());
+	
+	 if(printout){
+	   	std::cout << "ending cleaning ============================= " << detId_  << " size " << smoothedpoints.size() << std::endl;
+     	itSmoothedpointsBegin = smoothedpoints.begin();
+        for(itSmoothedpoints = itSmoothedpointsBegin; itSmoothedpoints != smoothedpoints.end(); ++itSmoothedpoints){  
+     		std::cout << "strip " << itSmoothedpoints->first << " adc " << itSmoothedpoints->second << std::endl;
+     	}
+     	std::cout << "===============================================" <<  std::endl; 
+		if(printout) printout = false;
+	}		
+	
 	
 
 	//inserting extra point is case of local minimum
 	//--------------------------------------------------------------------------------------------------
+	// these should be reset now for the point-insertion that follows
+	
+	if(smoothedpoints.size() >= 2){
+    	itSmoothedpointsBegin = smoothedpoints.begin();
+    	itSmoothedpointsEnd = --(smoothedpoints.end());
+		for(itSmoothedpoints = itSmoothedpointsBegin; itSmoothedpoints != itSmoothedpointsEnd; ++itSmoothedpoints){  
+    		itSmoothedpointsNext = itSmoothedpoints;
+			++itSmoothedpointsNext;
+      		float strip1 = itSmoothedpoints->first;
+      		float strip2 = itSmoothedpointsNext->first;
+      		float adc1 = itSmoothedpoints->second;
+      		float adc2 = itSmoothedpointsNext->second;
+	  		float m = (adc2 -adc1)/(strip2 -strip1);
+    
+        
+        	if((strip2 - strip1) >3 && abs(adc1 -adc2) >4){
+				float itStrip = 1;
+        		float strip = itStrip + strip1;
+ 				while(strip < strip2){
+				
+					float adc = adcs[strip];
+                	if( adc < (adc1 + m * itStrip - 2 * (float)noiseHandle->getNoise(strip+APVn*128,detNoiseRange))){
+						//std::cout << "applying correction strip: " << strip + APVn*128 << " adc " << adc << " detId: " << detId_ << std::endl;
+						smoothedpoints.insert(itSmoothedpointsNext, std::pair<uint16_t, int16_t >(strip,adc));
+						++itSmoothedpoints;
+						++itSmoothedpointsNext;
+						itSmoothedpointsEnd = --(smoothedpoints.end());
+					} 
+					++itStrip;
+					++strip;
+				}
+			
+
+	    	}
+		}
+	}
+	
+	
+	itSmoothedpointsBegin = smoothedpoints.begin();
+    itSmoothedpointsEnd = --(smoothedpoints.end());
 	uint16_t firstStripFlat = itSmoothedpointsBegin->first;
     uint16_t lastStripFlat = itSmoothedpointsEnd->first;
     int16_t firstStripFlatADC= itSmoothedpointsBegin->second;
@@ -522,43 +581,14 @@ void inline SiStripAPVRestorer::BaselineCleaner(std::vector<int16_t>& adcs, Digi
        	while(strip < 128){
 			float adc = adcs[strip];
             if( adc < ( lastStripFlatADC - 2 * (float)noiseHandle->getNoise(strip+APVn*128,detNoiseRange))){
-            	smoothedpoints.insert(itSmoothedpointsEnd, std::pair<uint16_t, int16_t >(strip,adc));
+            	smoothedpoints.insert(smoothedpoints.end(), std::pair<uint16_t, int16_t >(strip,adc));
 			} 
 			++strip;
 		}
 	}
 	
+	
     
-	for(itSmoothedpoints = itSmoothedpointsBegin; itSmoothedpoints != itSmoothedpointsEnd; ++itSmoothedpoints){  
-    	DigiMapIter itSmoothedpointsNext = itSmoothedpoints;
-		++itSmoothedpointsNext;
-      	float strip1 = itSmoothedpoints->first;
-      	float strip2 = itSmoothedpointsNext->first;
-      	float adc1 = itSmoothedpoints->second;
-      	float adc2 = itSmoothedpointsNext->second;
-	  	float m = (adc2 -adc1)/(strip2 -strip1);
-    
-        
-        if((strip2 - strip1) >3 && abs(adc1 -adc2) >4){
-			float itStrip = 1;
-        	float strip = itStrip + strip1;
- 			while(strip < strip2){
-				
-				float adc = adcs[strip];
-                if( adc < (adc1 + m * itStrip - 2 * (float)noiseHandle->getNoise(strip+APVn*128,detNoiseRange))){
-					//std::cout << "applying correction strip: " << strip + APVn*128 << " adc " << adc << " detId: " << detId_ << std::endl;
-					smoothedpoints.insert(itSmoothedpointsNext, std::pair<uint16_t, int16_t >(strip,adc));
-					++itSmoothedpoints;
-					++itSmoothedpointsNext;
-					itSmoothedpointsEnd = --(smoothedpoints.end());
-				} 
-				++itStrip;
-				++strip;
-			}
-			
-
-	    }
-	}
 }
 
 void inline SiStripAPVRestorer::BaselineFollower(DigiMap& smoothedpoints, std::vector<int16_t>& baseline, float median){
