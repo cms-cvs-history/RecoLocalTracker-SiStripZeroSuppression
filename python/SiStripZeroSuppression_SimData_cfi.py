@@ -5,9 +5,9 @@ from RecoLocalTracker.SiStripZeroSuppression.DefaultAlgorithms_cff import *
 siStripZeroSuppression = cms.EDProducer("SiStripZeroSuppression",
                                         
     Algorithms = DefaultAlgorithms,
-    RawDigiProducersList = cms.VInputTag( cms.InputTag('simSiStripDigis','VirginRaw'), 
-                                          cms.InputTag('simSiStripDigis','ProcessedRaw'),
-                                          cms.InputTag('simSiStripDigis','ScopeMode')),
+    RawDigiProducersList = cms.VInputTag( cms.InputTag('mix', 'simSiStripDigisVirginRaw'), 
+                                          cms.InputTag('mix', 'simSiStripDigisProcessedRaw'),
+                                          cms.InputTag('mix', 'simSiStripDigisScopeMode')),
 
     DigisToMergeZS = cms.InputTag('siStripDigis','ZeroSuppressed'),
     DigisToMergeVR = cms.InputTag('siStripVRDigis','VirginRaw'),
