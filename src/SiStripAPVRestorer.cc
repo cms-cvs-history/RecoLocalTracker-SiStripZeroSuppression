@@ -1,4 +1,5 @@
 #include "RecoLocalTracker/SiStripZeroSuppression/interface/SiStripAPVRestorer.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include <cmath>
 #include <iostream>
@@ -25,9 +26,9 @@ SiStripAPVRestorer::SiStripAPVRestorer(const edm::ParameterSet& conf):
   CutToAvoidSignal_(conf.getParameter<double>("CutToAvoidSignal")),
   nSaturatedStrip_(conf.getParameter<uint32_t>("nSaturatedStrip")),
   ApplyBaselineCleaner_(conf.getParameter<bool>("ApplyBaselineCleaner")),
-  CleaningSequence_(conf.getParameter<uint32_t>("CleaningSequence")),
   slopeX_(conf.getParameter<int32_t>("slopeX")),
   slopeY_(conf.getParameter<int32_t>("slopeY")),
+  CleaningSequence_(conf.getParameter<uint32_t>("CleaningSequence")),
   ApplyBaselineRejection_(conf.getParameter<bool>("ApplyBaselineRejection")),
   MeanCM_(conf.getParameter<int32_t>("MeanCM")),
   filteredBaselineMax_(conf.getParameter<double>("filteredBaselineMax")),
@@ -139,8 +140,6 @@ void SiStripAPVRestorer::restore(const uint16_t& firstAPV, std::vector<int16_t>&
 template<typename T>
 inline
 int16_t SiStripAPVRestorer::BaselineFollowerInspect(const uint16_t& firstAPV, std::vector<T>& digis){
-  SiStripQuality::Range detQualityRange = qualityHandle->getRange(detId_);
-  
   std::vector<T> singleAPVdigi;  
   int16_t nAPVflagged = 0;
   
@@ -185,9 +184,6 @@ int16_t SiStripAPVRestorer::BaselineFollowerInspect(const uint16_t& firstAPV, st
 template<typename T>
 inline
 int16_t SiStripAPVRestorer::BaselineAndSaturationInspect(const uint16_t& firstAPV, std::vector<T>& digis){
-  SiStripQuality::Range detQualityRange = qualityHandle->getRange(detId_);
-  
-   
   std::vector<T> singleAPVdigi;
   singleAPVdigi.clear();
   
